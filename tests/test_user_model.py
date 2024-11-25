@@ -8,7 +8,7 @@ RANDOM_NUMBER = 42
 
 
 @pytest.fixture
-def mock_random_org(mocker):
+def mock_omdb_com(mocker):
     # Patch the requests.get call
     # requests.get returns an object, which we have replaced with a mock object
     mock_response = mocker.Mock()
@@ -18,7 +18,7 @@ def mock_random_org(mocker):
     return mock_response
 
 
-def test_get_random(mock_random_org):
+def test_get_random(mock_omdb_com):
     """Test retrieving a random number from random.org."""
     result = get_random(NUM_SONGS)
 
@@ -42,9 +42,9 @@ def test_get_random_timeout(mocker):
     with pytest.raises(RuntimeError, match="Request to random.org timed out."):
         get_random(NUM_SONGS)
 
-def test_get_random_invalid_response(mock_random_org):
+def test_get_random_invalid_response(mock_omdb_com):
     """Simulate  an invalid response (non-digit)."""
-    mock_random_org.text = "invalid_response"
+    mock_omdb_com.text = "invalid_response"
 
     with pytest.raises(ValueError, match="Invalid response from random.org: invalid_response"):
         get_random(NUM_SONGS)

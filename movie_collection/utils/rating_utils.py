@@ -1,10 +1,13 @@
 import logging
 import requests
+import os
 
 # from movie_collection.utils.logger import configure_logger
 
 logger = logging.getLogger(__name__)
 # configure_logger(logger)
+
+API_KEY = os.getenv("API_KEY")
 
 
 def get_rating(imdb_id: str) -> float:
@@ -46,3 +49,7 @@ def get_rating(imdb_id: str) -> float:
     except requests.exceptions.RequestException as e:
         logger.error("Request to omdbapi.com failed: %s", e)
         raise RuntimeError("Request to omdbapi.com failed: %s" % e)
+
+    except requests.exceptions.HTTPError as e:
+        logger.error("HTTP error from omdbapi.com: %s", e)
+        raise RuntimeError("HTTP error from omdbapi.com: %s" % e)
