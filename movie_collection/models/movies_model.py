@@ -18,7 +18,7 @@ class Movie:
     title: str
     genre: str
     year: int
-    duration: int  # in seconds
+    duration: int  # in minutes
     
 
     def __post_init__(self):
