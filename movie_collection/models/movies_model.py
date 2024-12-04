@@ -24,8 +24,8 @@ class Movie:
     def __post_init__(self):
         if self.duration <= 0:
             raise ValueError(f"Duration must be greater than 0, got {self.duration}")
-        if self.year <= 1900:
-            raise ValueError(f"Year must be greater than 1900, got {self.year}")
+        # if self.year <= 1900:
+        #     raise ValueError(f"Year must be greater than 1900, got {self.year}")
 
 
 def create_movie(director: str, title: str, genre: str, year: int, duration: int) -> None:
@@ -41,21 +41,21 @@ def create_movie(director: str, title: str, genre: str, year: int, duration: int
 
     Raises:
         ValueError: If year or duration are invalid.
-        sqlite3.IntegrityError: If a song with the same compound key (director, title, year) already exists. #confirm using director
+        sqlite3.IntegrityError: If a movie with the same compound key (director, title, year) already exists. #confirm using director
         sqlite3.Error: For any other database errors.
     """
     # Validate the required fields
     if not isinstance(year, int) or year < 1900:
         raise ValueError(f"Invalid year provided: {year} (must be an integer greater than or equal to 1900).")
     if not isinstance(duration, int) or duration <= 0:
-        raise ValueError(f"Invalid song duration: {duration} (must be a positive integer).")
+        raise ValueError(f"Invalid movie duration: {duration} (must be a positive integer).")
 
     try:
         # Use the context manager to handle the database connection
         with get_db_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO songs (director, title, genre, year, duration)
+                INSERT INTO movies (director, title, genre, year, duration)
                 VALUES (?, ?, ?, ?, ?)
             """, (director, title, genre, year, duration))
             conn.commit()
@@ -63,10 +63,10 @@ def create_movie(director: str, title: str, genre: str, year: int, duration: int
             logger.info("Movie created successfully: %s - %s (%d)", director, title, year) #maybe add back director
 
     except sqlite3.IntegrityError as e:
-        logger.error("Song with director '%s', title '%s', and year %d already exists.", director, title, year)
-        raise ValueError(f"Song with artist '{director}', title '{title}', and year {year} already exists.") from e
+        logger.error("Movie with director '%s', title '%s', and year %d already exists.", director, title, year)
+        raise ValueError(f"Movie with artist '{director}', title '{title}', and year {year} already exists.") from e
     except sqlite3.Error as e:
-        logger.error("Database error while creating song: %s", str(e))
+        logger.error("Database error while creating movie: %s", str(e))
         raise sqlite3.Error(f"Database error: {str(e)}")
 
 
@@ -86,7 +86,7 @@ def delete_movie(movie_id: int) -> None:
         with get_db_connection() as conn:
             cursor = conn.cursor()
 
-            # Check if the song exists and if it's already deleted
+            # Check if the movie exists and if it's already deleted
             cursor.execute("SELECT deleted FROM movies WHERE id = ?", (movie_id,))
             try:
                 deleted = cursor.fetchone()[0]
@@ -128,7 +128,7 @@ def get_movie_by_id(movie_id: int) -> Movie:
             logger.info("Attempting to retrieve movie with ID %s", movie_id)
             cursor.execute("""
                 SELECT id, director, title, genre, year, duration, deleted
-                FROM songs
+                FROM movies
                 WHERE id = ?
             """, (movie_id,))
             row = cursor.fetchone()
@@ -136,8 +136,8 @@ def get_movie_by_id(movie_id: int) -> Movie:
             if row:
                 if row[6]:  # deleted flag
                     logger.info("Movie with ID %s has been deleted", movie_id)
-                    raise ValueError(f"Song with ID {movie_id} has been deleted")
-                logger.info("Song with ID %s found", movie_id)
+                    raise ValueError(f"Movie with ID {movie_id} has been deleted")
+                logger.info("Movie with ID %s found", movie_id)
                 return Movie(id=row[0], director=row[1], title=row[2], genre=row[3], year=row[4], duration=row[5])
             else:
                 logger.info("Movie with ID %s not found", movie_id)
@@ -149,9 +149,9 @@ def get_movie_by_id(movie_id: int) -> Movie:
     
 
 
-def get_movie_by_compound_key(director: str, title: str, year: int) -> Song:
+def get_movie_by_compound_key(director: str, title: str, year: int) -> Movie:
     """
-    Retrieves a song from the catalog by its compound key (director, title, year).
+    Retrieves a movie from the catalog by its compound key (director, title, year).
 
     Args:
         director (str): The director of the movie.
@@ -170,7 +170,7 @@ def get_movie_by_compound_key(director: str, title: str, year: int) -> Song:
             logger.info("Attempting to retrieve movie with director '%s', title '%s', and year %d", director, title, year)
             cursor.execute("""
                 SELECT id, director, title, genre, year, duration, deleted
-                FROM songs
+                FROM movies
                 WHERE director = ? AND title = ? AND year = ?
             """, (director, title, year))
             row = cursor.fetchone()
@@ -225,7 +225,7 @@ def get_all_movies(sort_by_watch_count: bool = False) -> list[dict]: #do i need 
                 logger.warning("The movie catalog is empty.")
                 return []
 
-            songs = [
+            movies = [
                 {
                     "id": row[0],
                     "director": row[1],
@@ -241,7 +241,7 @@ def get_all_movies(sort_by_watch_count: bool = False) -> list[dict]: #do i need 
             return Movie
 
     except sqlite3.Error as e:
-        logger.error("Database error while retrieving all songs: %s", str(e))
+        logger.error("Database error while retrieving all movies: %s", str(e))
         raise e
 
 
