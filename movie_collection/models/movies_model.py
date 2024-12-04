@@ -7,6 +7,9 @@ from movie_collection.utils.logger import configure_logger
 from movie_collection.utils.rating_utils import get_rating
 from movie_collection.utils.sql_utils import get_db_connection
 
+logger = logging.getLogger(__name__)
+configure_logger(logger)
+
 
 @dataclass
 class Movie:
@@ -174,13 +177,13 @@ def get_movie_by_compound_key(director: str, title: str, year: int) -> Song:
 
             if row:
                 if row[6]:  # deleted flag
-                    logger.info("Meal with director '%s', title '%s', and year %d has been deleted", director, title, year)
+                    logger.info("Movie with director '%s', title '%s', and year %d has been deleted", director, title, year)
                     raise ValueError(f"Movie with director '{director}', title '{title}', and year {year} has been deleted")
                 logger.info("Movie with director '%s', title '%s', and year %d found", artist, title, year)
-                return Meal(id=row[0], director=row[1], title=row[2], genre=row[3], year=row[4], duration=row[5])
+                return Movie(id=row[0], director=row[1], title=row[2], genre=row[3], year=row[4], duration=row[5])
             else:
                 logger.info("Movie with director '%s', title '%s', and year %d not found", director, title, year)
-                raise ValueError(f"Song with director '{director}', title '{title}', and year {year} not found")
+                raise ValueError(f"Movie with director '{director}', title '{title}', and year {year} not found")
 
     except sqlite3.Error as e:
         logger.error("Database error while retrieving movie by compound key (director '%s', title '%s', year %d): %s", director, title, year, str(e))
@@ -188,15 +191,15 @@ def get_movie_by_compound_key(director: str, title: str, year: int) -> Song:
 
 
 
-def get_all_movies(sort_by_play_count: bool = False) -> list[dict]: #do i need to chnage sort by play count?
+def get_all_movies(sort_by_watch_count: bool = False) -> list[dict]: #do i need to chnage sort by play count?
     """
     Retrieves all movies that are not marked as deleted from the catalog.
 
     Args:
-        sort_by_play_count (bool): If True, sort the movies by play count in descending order.
+        sort_by_watch_count (bool): If True, sort the movies by watch count in descending order.
 
     Returns:
-        list[dict]: A list of dictionaries representing all non-deleted movies with play_count.
+        list[dict]: A list of dictionaries representing all non-deleted movies with watch_count.
 
     Logs:
         Warning: If the catalog is empty.
@@ -208,12 +211,12 @@ def get_all_movies(sort_by_play_count: bool = False) -> list[dict]: #do i need t
 
             # Determine the sort order based on the 'sort_by_play_count' flag
             query = """
-                SELECT id, director, title, genre, year, duration, play_count
+                SELECT id, director, title, genre, year, duration, watch_count
                 FROM movies
                 WHERE deleted = FALSE
             """
-            if sort_by_play_count:
-                query += " ORDER BY play_count DESC"
+            if sort_by_watch_count:
+                query += " ORDER BY watch_count DESC"
 
             cursor.execute(query)
             rows = cursor.fetchall()
@@ -230,13 +233,51 @@ def get_all_movies(sort_by_play_count: bool = False) -> list[dict]: #do i need t
                     "genre": row[3],
                     "year": row[4],
                     "duration": row[5],
-                    "play_count": row[6],
+                    "watch_count": row[6],
                 }
                 for row in rows
             ]
             logger.info("Retrieved %d movies from the catalog", len(Movie))
-            return movie
+            return Movie
 
     except sqlite3.Error as e:
         logger.error("Database error while retrieving all songs: %s", str(e))
+        raise e
+
+
+def update_watch_count(movie_id: int) -> None:
+    """
+    Increments the watch count of a movie by movie ID.
+
+    Args:
+        movie_id (int): The ID of the movie whose watch count should be incremented.
+
+    Raises:
+        ValueError: If the movie does not exist or is marked as deleted.
+        sqlite3.Error: If there is a database error.
+    """
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            logger.info("Attempting to update movie count for movie with ID %d", movie_id)
+
+            # Check if the movie exists and if it's deleted
+            cursor.execute("SELECT deleted FROM moviess WHERE id = ?", (movie_id,))
+            try:
+                deleted = cursor.fetchone()[0]
+                if deleted:
+                    logger.info("Movie with ID %d has been deleted", movie_id)
+                    raise ValueError(f"Movie with ID {movie_id} has been deleted")
+            except TypeError:
+                logger.info("Movie with ID %d not found", movie_id)
+                raise ValueError(f"Movie with ID {movie_id} not found")
+
+            # Increment the play count
+            cursor.execute("UPDATE movies SET watch_count = watch_count + 1 WHERE id = ?", (movie_id,))
+            conn.commit()
+
+            logger.info("Play count incremented for movie with ID: %d", movie_id)
+
+    except sqlite3.Error as e:
+        logger.error("Database error while updating watch count for movie with ID %d: %s", movie_id, str(e))
         raise e
