@@ -1,0 +1,224 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.10.5, pytest-8.3.3, pluggy-1.5.0
+rootdir: /Users/kohkihatori/BU/CS/cs411/411-finalproject
+plugins: anyio-3.6.2, mock-3.14.0
+collected 10 items
+
+tests/test_user_model.py ..F....F..                                      [100%]
+
+=================================== FAILURES ===================================
+___________________________ test_create_user_success ___________________________
+
+self = <Mock name='mock.cursor().execute' id='4405160704'>
+args = ('\n        INSERT INTO users (username, salt, hashed_password)\n        VALUES (?, ?, ?)\n        ', ('newuser', <ANY>, <ANY>))
+kwargs = {}
+expected = call('\n        INSERT INTO users (username, salt, hashed_password)\n        VALUES (?, ?, ?)\n        ', ('newuser', <ANY>, <ANY>))
+actual = call('\n                INSERT INTO users (username, salt, hashed_password)\n                VALUES (?, ?, ?)\n            ', ('newuser', '$2b$12$EnalxtWppUp4OAGVpiNO/O', '$2b$12$EnalxtWppUp4OAGVpiNO/OM06l8gSkey7sDuwBFRSCYt9zzX4vg.C'))
+_error_message = <function NonCallableMock.assert_called_with.<locals>._error_message at 0x105f08550>
+cause = None
+
+    def assert_called_with(self, /, *args, **kwargs):
+        """assert that the last call was made with the specified arguments.
+    
+        Raises an AssertionError if the args and keyword args passed in are
+        different to the last call to the mock."""
+        if self.call_args is None:
+            expected = self._format_mock_call_signature(args, kwargs)
+            actual = 'not called.'
+            error_message = ('expected call not found.\nExpected: %s\nActual: %s'
+                    % (expected, actual))
+            raise AssertionError(error_message)
+    
+        def _error_message():
+            msg = self._format_mock_failure_message(args, kwargs)
+            return msg
+        expected = self._call_matcher(_Call((args, kwargs), two=True))
+        actual = self._call_matcher(self.call_args)
+        if actual != expected:
+            cause = expected if isinstance(expected, Exception) else None
+>           raise AssertionError(_error_message()) from cause
+E           AssertionError: expected call not found.
+E           Expected: execute('\n        INSERT INTO users (username, salt, hashed_password)\n        VALUES (?, ?, ?)\n        ', ('newuser', <ANY>, <ANY>))
+E           Actual: execute('\n                INSERT INTO users (username, salt, hashed_password)\n                VALUES (?, ?, ?)\n            ', ('newuser', '$2b$12$EnalxtWppUp4OAGVpiNO/O', '$2b$12$EnalxtWppUp4OAGVpiNO/OM06l8gSkey7sDuwBFRSCYt9zzX4vg.C'))
+
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/mock.py:919: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+self = <Mock name='mock.cursor().execute' id='4405160704'>
+args = ('\n        INSERT INTO users (username, salt, hashed_password)\n        VALUES (?, ?, ?)\n        ', ('newuser', <ANY>, <ANY>))
+kwargs = {}
+
+    def assert_called_once_with(self, /, *args, **kwargs):
+        """assert that the mock was called exactly once and that that call was
+        with the specified arguments."""
+        if not self.call_count == 1:
+            msg = ("Expected '%s' to be called once. Called %s times.%s"
+                   % (self._mock_name or 'mock',
+                      self.call_count,
+                      self._calls_repr()))
+            raise AssertionError(msg)
+>       return self.assert_called_with(*args, **kwargs)
+E       AssertionError: expected call not found.
+E       Expected: execute('\n        INSERT INTO users (username, salt, hashed_password)\n        VALUES (?, ?, ?)\n        ', ('newuser', <ANY>, <ANY>))
+E       Actual: execute('\n                INSERT INTO users (username, salt, hashed_password)\n                VALUES (?, ?, ?)\n            ', ('newuser', '$2b$12$EnalxtWppUp4OAGVpiNO/O', '$2b$12$EnalxtWppUp4OAGVpiNO/OM06l8gSkey7sDuwBFRSCYt9zzX4vg.C'))
+E       
+E       pytest introspection follows:
+E       
+E       Args:
+E       assert ('\n         ...Yt9zzX4vg.C')) == ('\n        I...<ANY>, <ANY>))
+E         
+E         At index 0 diff: '\n                INSERT INTO users (username, salt, hashed_password)\n                VALUES (?, ?, ?)\n            ' != '\n        INSERT INTO users (username, salt, hashed_password)\n        VALUES (?, ?, ?)\n        '
+E         Use -v to get more diff
+
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/mock.py:931: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+mock_db_connection = <Mock id='4405157488'>
+
+    def test_create_user_success(mock_db_connection):
+        mock_cursor = mock_db_connection.cursor.return_value
+        mock_cursor.fetchone.return_value = None
+    
+        username = "newuser"
+        password = "securepassword"
+    
+        create_user(username, password)
+    
+>       mock_cursor.execute.assert_called_once_with(
+            """
+            INSERT INTO users (username, salt, hashed_password)
+            VALUES (?, ?, ?)
+            """,
+            (username, ANY, ANY),  # Replace pytest.any() with unittest.mock.ANY
+        )
+E       AssertionError: expected call not found.
+E       Expected: execute('\n        INSERT INTO users (username, salt, hashed_password)\n        VALUES (?, ?, ?)\n        ', ('newuser', <ANY>, <ANY>))
+E       Actual: execute('\n                INSERT INTO users (username, salt, hashed_password)\n                VALUES (?, ?, ?)\n            ', ('newuser', '$2b$12$EnalxtWppUp4OAGVpiNO/O', '$2b$12$EnalxtWppUp4OAGVpiNO/OM06l8gSkey7sDuwBFRSCYt9zzX4vg.C'))
+E       
+E       pytest introspection follows:
+E       
+E       Args:
+E       assert ('\n         ...Yt9zzX4vg.C')) == ('\n        I...<ANY>, <ANY>))
+E         
+E         At index 0 diff: '\n                INSERT INTO users (username, salt, hashed_password)\n                VALUES (?, ?, ?)\n            ' != '\n        INSERT INTO users (username, salt, hashed_password)\n        VALUES (?, ?, ?)\n        '
+E         Use -v to get more diff
+
+tests/test_user_model.py:57: AssertionError
+----------------------------- Captured stderr call -----------------------------
+2024-12-05 13:17:36,832 - movie_collection.models.user_model - INFO - Attempting to create a new user: newuser
+2024-12-05 13:17:37,063 - movie_collection.models.user_model - INFO - User newuser created successfully.
+------------------------------ Captured log call -------------------------------
+INFO     movie_collection.models.user_model:user_model.py:35 Attempting to create a new user: newuser
+INFO     movie_collection.models.user_model:user_model.py:47 User newuser created successfully.
+_________________________ test_update_password_success _________________________
+
+self = <Mock name='mock.cursor().execute' id='4402482576'>
+args = ('\n        UPDATE users\n        SET salt = ?, hashed_password = ?\n        WHERE username = ?\n        ', (<ANY>, <ANY>, 'existinguser'))
+kwargs = {}
+expected = call('\n        UPDATE users\n        SET salt = ?, hashed_password = ?\n        WHERE username = ?\n        ', (<ANY>, <ANY>, 'existinguser'))
+actual = call('\n                UPDATE users\n                SET salt = ?, hashed_password = ?\n                WHERE usernam...  ', ('$2b$12$xe1aYkHVWCZMgXgIFLa3Z.', '$2b$12$xe1aYkHVWCZMgXgIFLa3Z.MTy7naIJkxUDmbrXzQ6m.TOorNEG2Q6', 'existinguser'))
+_error_message = <function NonCallableMock.assert_called_with.<locals>._error_message at 0x106913d90>
+cause = None
+
+    def assert_called_with(self, /, *args, **kwargs):
+        """assert that the last call was made with the specified arguments.
+    
+        Raises an AssertionError if the args and keyword args passed in are
+        different to the last call to the mock."""
+        if self.call_args is None:
+            expected = self._format_mock_call_signature(args, kwargs)
+            actual = 'not called.'
+            error_message = ('expected call not found.\nExpected: %s\nActual: %s'
+                    % (expected, actual))
+            raise AssertionError(error_message)
+    
+        def _error_message():
+            msg = self._format_mock_failure_message(args, kwargs)
+            return msg
+        expected = self._call_matcher(_Call((args, kwargs), two=True))
+        actual = self._call_matcher(self.call_args)
+        if actual != expected:
+            cause = expected if isinstance(expected, Exception) else None
+>           raise AssertionError(_error_message()) from cause
+E           AssertionError: expected call not found.
+E           Expected: execute('\n        UPDATE users\n        SET salt = ?, hashed_password = ?\n        WHERE username = ?\n        ', (<ANY>, <ANY>, 'existinguser'))
+E           Actual: execute('\n                UPDATE users\n                SET salt = ?, hashed_password = ?\n                WHERE username = ?\n            ', ('$2b$12$xe1aYkHVWCZMgXgIFLa3Z.', '$2b$12$xe1aYkHVWCZMgXgIFLa3Z.MTy7naIJkxUDmbrXzQ6m.TOorNEG2Q6', 'existinguser'))
+
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/mock.py:919: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+self = <Mock name='mock.cursor().execute' id='4402482576'>
+args = ('\n        UPDATE users\n        SET salt = ?, hashed_password = ?\n        WHERE username = ?\n        ', (<ANY>, <ANY>, 'existinguser'))
+kwargs = {}
+
+    def assert_called_once_with(self, /, *args, **kwargs):
+        """assert that the mock was called exactly once and that that call was
+        with the specified arguments."""
+        if not self.call_count == 1:
+            msg = ("Expected '%s' to be called once. Called %s times.%s"
+                   % (self._mock_name or 'mock',
+                      self.call_count,
+                      self._calls_repr()))
+            raise AssertionError(msg)
+>       return self.assert_called_with(*args, **kwargs)
+E       AssertionError: expected call not found.
+E       Expected: execute('\n        UPDATE users\n        SET salt = ?, hashed_password = ?\n        WHERE username = ?\n        ', (<ANY>, <ANY>, 'existinguser'))
+E       Actual: execute('\n                UPDATE users\n                SET salt = ?, hashed_password = ?\n                WHERE username = ?\n            ', ('$2b$12$xe1aYkHVWCZMgXgIFLa3Z.', '$2b$12$xe1aYkHVWCZMgXgIFLa3Z.MTy7naIJkxUDmbrXzQ6m.TOorNEG2Q6', 'existinguser'))
+E       
+E       pytest introspection follows:
+E       
+E       Args:
+E       assert ('\n         ...xistinguser')) == ('\n        U...xistinguser'))
+E         
+E         At index 0 diff: '\n                UPDATE users\n                SET salt = ?, hashed_password = ?\n                WHERE username = ?\n            ' != '\n        UPDATE users\n        SET salt = ?, hashed_password = ?\n        WHERE username = ?\n        '
+E         Use -v to get more diff
+
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/mock.py:931: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+mock_db_connection = <Mock id='4406241616'>
+
+    def test_update_password_success(mock_db_connection):
+        mock_cursor = mock_db_connection.cursor.return_value
+        mock_cursor.rowcount = 1
+    
+        username = "existinguser"
+        new_password = "newsecurepassword"
+    
+        update_password(username, new_password)
+    
+>       mock_cursor.execute.assert_called_once_with(
+            """
+            UPDATE users
+            SET salt = ?, hashed_password = ?
+            WHERE username = ?
+            """,
+            (ANY, ANY, username),  # Replace pytest.any() with unittest.mock.ANY
+        )
+E       AssertionError: expected call not found.
+E       Expected: execute('\n        UPDATE users\n        SET salt = ?, hashed_password = ?\n        WHERE username = ?\n        ', (<ANY>, <ANY>, 'existinguser'))
+E       Actual: execute('\n                UPDATE users\n                SET salt = ?, hashed_password = ?\n                WHERE username = ?\n            ', ('$2b$12$xe1aYkHVWCZMgXgIFLa3Z.', '$2b$12$xe1aYkHVWCZMgXgIFLa3Z.MTy7naIJkxUDmbrXzQ6m.TOorNEG2Q6', 'existinguser'))
+E       
+E       pytest introspection follows:
+E       
+E       Args:
+E       assert ('\n         ...xistinguser')) == ('\n        U...xistinguser'))
+E         
+E         At index 0 diff: '\n                UPDATE users\n                SET salt = ?, hashed_password = ?\n                WHERE username = ?\n            ' != '\n        UPDATE users\n        SET salt = ?, hashed_password = ?\n        WHERE username = ?\n        '
+E         Use -v to get more diff
+
+tests/test_user_model.py:105: AssertionError
+----------------------------- Captured stderr call -----------------------------
+2024-12-05 13:17:38,270 - movie_collection.models.user_model - INFO - Attempting to update password for user: existinguser
+2024-12-05 13:17:38,500 - movie_collection.models.user_model - INFO - Password for user existinguser updated successfully.
+------------------------------ Captured log call -------------------------------
+INFO     movie_collection.models.user_model:user_model.py:102 Attempting to update password for user: existinguser
+INFO     movie_collection.models.user_model:user_model.py:118 Password for user existinguser updated successfully.
+=========================== short test summary info ============================
+FAILED tests/test_user_model.py::test_create_user_success - AssertionError: e...
+FAILED tests/test_user_model.py::test_update_password_success - AssertionErro...
+========================= 2 failed, 8 passed in 3.36s ==========================
