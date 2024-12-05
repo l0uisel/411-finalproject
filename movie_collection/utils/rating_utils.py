@@ -2,10 +2,10 @@ import logging
 import requests
 import os
 
-# from movie_collection.utils.logger import configure_logger
+from movie_collection.utils.logger import configure_logger
 
 logger = logging.getLogger(__name__)
-# configure_logger(logger)
+configure_logger(logger)
 
 API_KEY = os.getenv("API_KEY")
 
@@ -32,7 +32,8 @@ def get_rating(imdb_id: str) -> float:
         # Check if the request was successful
         response.raise_for_status()
 
-        rating = response.json()["imdbRating"]
+        rating = response.json()
+        rating = rating["imdbRating"]
 
         try:
             rating = float(rating)
