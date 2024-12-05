@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import logging
 import sqlite3
+import os
 from typing import Any
 
 from movie_collection.utils.logger import configure_logger
@@ -69,6 +70,26 @@ def create_movie(director: str, title: str, genre: str, year: int, duration: int
         logger.error("Database error while creating movie: %s", str(e))
         raise sqlite3.Error(f"Database error: {str(e)}")
 
+def clear_catalog() -> None:
+    """
+    Recreates the moviees table, effectively deleting all songs.
+
+    Raises:
+        sqlite3.Error: If any database error occurs.
+    """
+    try:
+        with open(os.getenv("SQL_CREATE_TABLE_PATH", "/app/sql/create_tables.sql"), "r") as fh:
+            create_table_script = fh.read()
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.executescript(create_table_script)
+            conn.commit()
+
+            logger.info("Catalog cleared successfully.")
+
+    except sqlite3.Error as e:
+        logger.error("Database error while clearing catalog: %s", str(e))
+        raise e
 
 
 def delete_movie(movie_id: int) -> None:
