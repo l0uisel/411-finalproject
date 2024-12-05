@@ -1,3 +1,4 @@
+import os
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, Response, request
 
@@ -55,6 +56,13 @@ def db_check() -> Response:
     except Exception as e:
         return make_response(jsonify({'error': str(e)}), 404)
 
+##########################################################
+#
+# Movie Management
+#
+##########################################################
+
+
 @app.route('/api/clear-catalog', methods=['DELETE'])
 def clear_catalog() -> Response:
     """
@@ -70,4 +78,28 @@ def clear_catalog() -> Response:
     except Exception as e:
         app.logger.error(f"Error clearing catalog: {e}")
         return make_response(jsonify({'error': str(e)}), 500)
+
+############################################################
+#
+# Watchlist Management
+#
+############################################################
+############################################################
+#
+# Play Watchlist
+#
+############################################################
+############################################################
+#
+# Arrange Watchlist
+#
+############################################################
+############################################################
+#
+# Leaderboard / Stats
+#
+############################################################
+if __name__ == '__main__':
+    port = os.getenv("PORT")
+    app.run(debug=True, host='0.0.0.0', port=port)
 
