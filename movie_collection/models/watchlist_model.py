@@ -4,7 +4,7 @@ import sqlite3
 from typing import Any
 
 from movie_collection.utils.logger import configure_logger
-from movie_collection.utils.rating_utils import get_rating
+from movie_collection.utils.omdb_utils import get_omdb_data
 from movie_collection.utils.sql_utils import get_db_connection
 
 logger = logging.getLogger(__name__)

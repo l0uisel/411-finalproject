@@ -5,7 +5,7 @@ import os
 from typing import Any
 
 from movie_collection.utils.logger import configure_logger
-from movie_collection.utils.rating_utils import get_rating
+from movie_collection.utils.omdb_utils import get_omdb_data
 from movie_collection.utils.sql_utils import get_db_connection
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,8 @@ configure_logger(logger)
 @dataclass
 class Movie:
     id: int
-    #actors or director: str 
+    imdb_id: str
+    director: str
     title: str
     genre: str
     year: int
@@ -29,7 +30,7 @@ class Movie:
         #     raise ValueError(f"Year must be greater than 1900, got {self.year}")
 
 
-def create_movie(director: str, title: str, genre: str, year: int, duration: int) -> None:
+def create_movie(title: str) -> None:
     """
     Creates a new movie in the movie table.
 
@@ -46,10 +47,15 @@ def create_movie(director: str, title: str, genre: str, year: int, duration: int
         sqlite3.Error: For any other database errors.
     """
     # Validate the required fields
-    if not isinstance(year, int) or year < 1900:
-        raise ValueError(f"Invalid year provided: {year} (must be an integer greater than or equal to 1900).")
-    if not isinstance(duration, int) or duration <= 0:
-        raise ValueError(f"Invalid movie duration: {duration} (must be a positive integer).")
+
+    # fetch data from omdbapi.com using the title.
+    try:
+        data = get_omdb_data(title)
+    except Exception as e:
+        logger.error("Error fetching movie data from omdbapi.com: %s", str(e))
+        raise e
+
+    # Extract data from the response and validate it
 
     try:
         # Use the context manager to handle the database connection

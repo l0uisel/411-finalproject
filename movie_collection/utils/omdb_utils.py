@@ -10,38 +10,33 @@ configure_logger(logger)
 API_KEY = os.getenv("API_KEY")
 
 
-def get_rating(imdb_id: str) -> float:
+def get_omdb_data(title: str) -> dict:
     """
     Fetches the rating of a movie from the OMDB API.
 
     Returns:
-        float: The rating of the movie.
+        data: The data of the movie.
 
     Raises:
         RuntimeError: If the request to omdbapi.com fails or returns an invalid response.
-        ValueError: If the response from omdbapi.com is not a valid float.
+        ValueError: If the response from omdbapi.com is not a valid data.
     """
-    url=f"https://www.omdbapi.com/?i={imdb_id}&apikey={API_KEY}"
+    url=f"https://www.omdbapi.com/?t={title}&apikey={API_KEY}"
 
     try:
         # Log the request to omdbapi.com
         logger.info("Fetching data from %s", url)
-
         response = requests.get(url, timeout=5)
-
         # Check if the request was successful
         response.raise_for_status()
+        data = response.json()
 
-        rating = response.json()
-        rating = rating["imdbRating"]
+        if data["Response"] == "False":
+            logger.error("Invalid response from omdbapi.com: %s", data["Error"])
+            raise ValueError(f"Invalid response from omdbapi.com: {data['Error']}")
 
-        try:
-            rating = float(rating)
-        except ValueError:
-            raise ValueError("Invalid response from omdbapi.com: %s" % rating)
-
-        logger.info("Received rating:  %.3f", rating)
-        return rating
+        logger.info(f"Received data: {data}")
+        return data
 
     except requests.exceptions.Timeout:
         logger.error("Request to omdbapi.com timed out.")
