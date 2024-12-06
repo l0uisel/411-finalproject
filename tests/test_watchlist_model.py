@@ -10,11 +10,11 @@ def watchlist_model():
 """Fixtures providing sample movies for the tests."""
 @pytest.fixture
 def sample_movie1():
-    return Movie(1, 'Artist 1', 'Movie 1', 2022, 'Pop', 180)
+    return Movie(1, 'Director 1', 'Movie 1', 2022, 'Drama', 180)
 
 @pytest.fixture
 def sample_movie2():
-    return Movie(2, 'Artist 2', 'Movie 2', 2021, 'Rock', 155)
+    return Movie(2, 'Director 2', 'Movie 2', 2021, 'Comedy', 155)
 
 @pytest.fixture
 def sample_watchlist(sample_movie1, sample_movie2):
@@ -125,10 +125,10 @@ def test_get_movie_by_list_number(watchlist_model, sample_watchlist):
     retrieved_movie = watchlist_model.get_movie_by_list_number(1)
     assert retrieved_movie.id == 1
     assert retrieved_movie.title == 'Movie 1'
-    assert retrieved_movie.artist == 'Artist 1'
+    assert retrieved_movie.artist == 'Director 1'
     assert retrieved_movie.year == 2022
     assert retrieved_movie.duration == 180
-    assert retrieved_movie.genre == 'Pop'
+    assert retrieved_movie.genre == 'Drama'
 
 def test_get_all_movies(watchlist_model, sample_watchlist):
     """Test successfully retrieving all movies from the watchlist."""
@@ -147,10 +147,10 @@ def test_get_movie_by_movie_id(watchlist_model, sample_movie1):
 
     assert retrieved_movie.id == 1
     assert retrieved_movie.title == 'Movie 1'
-    assert retrieved_movie.artist == 'Artist 1'
+    assert retrieved_movie.artist == 'Director 1'
     assert retrieved_movie.year == 2022
     assert retrieved_movie.duration == 180
-    assert retrieved_movie.genre == 'Pop'
+    assert retrieved_movie.genre == 'Drama'
 
 def test_get_current_movie(watchlist_model, sample_watchlist):
     """Test successfully retrieving the current movie from the watchlist."""
@@ -159,10 +159,10 @@ def test_get_current_movie(watchlist_model, sample_watchlist):
     current_movie = watchlist_model.get_current_movie()
     assert current_movie.id == 1
     assert current_movie.title == 'Movie 1'
-    assert current_movie.artist == 'Artist 1'
+    assert current_movie.artist == 'Director 1'
     assert current_movie.year == 2022
     assert current_movie.duration == 180
-    assert current_movie.genre == 'Pop'
+    assert current_movie.genre == 'Drama'
 
 def test_get_watchlist_length(watchlist_model, sample_watchlist):
     """Test getting the length of the watchlist."""
