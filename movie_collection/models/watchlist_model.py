@@ -17,15 +17,16 @@ class WatchlistModel:
     A class to manage a watchlist of movies.
 
     Attributes:
-        current_movie_number (int): current movie being watched.
-        watchlist (List[Movie]): list of movies in the watchlist.
+        current_list_number (int): The current list number being played.
+        watchlist (List[Movie]): The list of movies in the watchlist.
+
     """
 
     def __init__(self):
         """
-        Initializes the WatchlistModel with an empty watchlist and the current movie set to 1.
+        Initializes the WatchlistModel with an empty watchlist and the current list set to 1.
         """
-        self.current_movie_number = 1
+        self.current_list_number = 1
         self.watchlist: List[Movie] = []
 
     ##################################################
@@ -37,7 +38,7 @@ class WatchlistModel:
         Adds a movie to the watchlist.
 
         Args:
-            movie (Movie): movie to add.
+            movie (Movie): the movie to add to the watchlist.
 
         Raises:
             TypeError: If the movie is not a valid Movie instance.
@@ -45,27 +46,27 @@ class WatchlistModel:
         """
         logger.info("Adding new movie to watchlist")
         if not isinstance(movie, Movie):
-            logger.error("Invalid movie object")
-            raise TypeError("Invalid movie object")
+            logger.error("Movie is not a valid movie")
+            raise TypeError("Movie is not a valid movie")
 
         movie_id = self.validate_movie_id(movie.id, check_in_watchlist=False)
         if movie_id in [movie_in_watchlist.id for movie_in_watchlist in self.watchlist]:
-            logger.error("Movie with ID %d already exists", movie.id)
+            logger.error("Movie with ID %d already exists in the watchlist", movie.id)
             raise ValueError(f"Movie with ID {movie.id} already exists in the watchlist")
 
         self.watchlist.append(movie)
 
-    def remove_movie_by_id(self, movie_id: int) -> None:
+    def remove_movie_by_movie_id(self, movie_id: int) -> None:
         """
-        Removes a movie from the watchlist by its ID.
+        Removes a movie from the watchlist by its movie ID.
 
         Args:
-            movie_id (int): ID of the movie to remove.
+            movie_id (int): The ID of the movie to remove from the watchlist.
 
         Raises:
             ValueError: If the watchlist is empty or the movie ID is invalid.
         """
-        logger.info("Removing movie with ID %d from watchlist", movie_id)
+        logger.info("Removing movie with id %d from watchlist", movie_id)
         self.check_if_empty()
         movie_id = self.validate_movie_id(movie_id)
         self.watchlist = [movie_in_watchlist for movie_in_watchlist in self.watchlist if movie_in_watchlist.id != movie_id]
@@ -103,21 +104,21 @@ class WatchlistModel:
 
     def get_all_movies(self) -> List[Movie]:
         """
-        Returns all movies in the watchlist.
+        Returns a list of all movies in the watchlist.
         """
         self.check_if_empty()
         logger.info("Getting all movies in the watchlist")
         return self.watchlist
 
-    def get_movie_by_id(self, movie_id: int) -> Movie:
+    def get_movie_by_movie_id(self, movie_id: int) -> Movie:
         """
-        Retrieves a movie by its ID.
+        Retrieves a movie from the watchlist by its movie ID.
 
         Args:
-            movie_id (int): The ID of the movie.
+            movie_id (int): The ID of the movie to retrieve.
 
         Raises:
-            ValueError: If the movie is not found.
+            ValueError: If the watchlist is empty or the movie is not found.
         """
         self.check_if_empty()
         movie_id = self.validate_movie_id(movie_id)
@@ -142,7 +143,7 @@ class WatchlistModel:
 
     def get_current_movie(self) -> Movie:
         """
-        Returns the current movie being watched.
+        Returns the current movie being played.
         """
         self.check_if_empty()
         return self.get_movie_by_list_number(self.current_list_number)
@@ -158,7 +159,6 @@ class WatchlistModel:
         Returns the total duration of the watchlist in seconds.
         """
         return sum(movie.duration for movie in self.watchlist)
-
 
     ##################################################
     # Watchlist Movement Functions
@@ -179,6 +179,9 @@ class WatchlistModel:
     def move_movie_to_beginning(self, movie_id: int) -> None:
         """
         Moves a movie to the beginning of the watchlist.
+
+        Args:
+            movie_id (int): The ID of the movie to move to the beginning.
         """
         logger.info("Moving movie with ID %d to the beginning of the watchlist", movie_id)
         self.check_if_empty()
@@ -248,8 +251,6 @@ class WatchlistModel:
         self.watchlist[index1], self.watchlist[index2] = self.watchlist[index2], self.watchlist[index1]
         logger.info("Swapped movies with IDs %d and %d", movie1_id, movie2_id)
 
-
- 
     ##################################################
     # Utility Functions
     ##################################################
@@ -277,8 +278,8 @@ class WatchlistModel:
 
         if check_in_watchlist:
             if movie_id not in [movie_in_watchlist.id for movie_in_watchlist in self.watchlist]:
-                logger.error("movie with id %d not found in watchlist", movie_id)
-                raise ValueError(f"movie with id {movie_id} not found in watchlist")
+                logger.error("Movie with id %d not found in watchlist", movie_id)
+                raise ValueError(f"Movie with id {movie_id} not found in watchlist")
 
         return movie_id
 
@@ -311,16 +312,5 @@ class WatchlistModel:
             ValueError: If the watchlist is empty.
         """
         if not self.watchlist:
-            logger.error("watchlist is empty")
-            raise ValueError("watchlist is empty")
-               
-    def check_if_empty(self) -> None:
-        """
-        Checks if the watchlist is empty and raises an error if it is.
-        """
-        if not self.watchlist:
             logger.error("Watchlist is empty")
             raise ValueError("Watchlist is empty")
-
-# Ensure the logger is configured
-logging.basicConfig(level=logging.INFO)
