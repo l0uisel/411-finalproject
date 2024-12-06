@@ -97,16 +97,16 @@ def test_create_movie_invalid_duration():
         create_movie(director="Director Name", title="Movie Title", genre="Comedy", year=2022, duration="invalid")
 
 
-# def test_create_movie_invalid_year():
-#     """Test error when trying to create a movie with an invalid year (e.g., less than 1900 or non-integer)."""
+def test_create_movie_invalid_year():
+    """Test error when trying to create a movie with an invalid year (e.g., less than 1900 or non-integer)."""
 
-#     # Attempt to create a movie with a year less than 1900
-#     with pytest.raises(ValueError, match="Invalid year provided: 1899 \(must be an integer greater than or equal to 1900\)."):
-#         create_movie(director="Director Name", title="Movie Title", year=1899, genre="Pop", duration=180)
+    # Attempt to create a movie with a year less than 1900
+    with pytest.raises(ValueError, match="Invalid year provided: 1899 \(must be an integer greater than or equal to 1900\)."):
+        create_movie(director="Director Name", title="Movie Title",  genre="Comedy", year=1899, duration=180)
 
-#     # Attempt to create a movie with a non-integer year
-#     with pytest.raises(ValueError, match="Invalid year provided: invalid \(must be an integer greater than or equal to 1900\)."):
-#         create_movie(director="Director Name", title="Movie Title", year="invalid", genre="Pop", duration=180)
+    # Attempt to create a movie with a non-integer year
+    with pytest.raises(ValueError, match="Invalid year provided: invalid \(must be an integer greater than or equal to 1900\)."):
+        create_movie(director="Director Name", title="Movie Title",  genre="Comedy", year="invalid", duration=180)
 
 
 def test_delete_movie(mock_cursor):
@@ -247,8 +247,8 @@ def test_get_all_movies(mock_cursor):
     # Ensure the results match the expected output
     expected_result = [
         {"id": 1, "director": "Director A", "title": "Movie A", "genre": "Comedy", "year":2022, "duration": 120, "watch_count": 10},
-        {"id": 2, "director": "Director B", "title": "Movie B", "genre": "Romance", "year": 1989, "duration": 180, "play_count": 20},
-        {"id": 3, "director": "Director C", "title": "Movie C", "genre": "Action", "year":2000, "duration": 60, "play_count": 5}
+        {"id": 2, "director": "Director B", "title": "Movie B", "genre": "Romance", "year": 1989, "duration": 180, "watch_count": 20},
+        {"id": 3, "director": "Director C", "title": "Movie C", "genre": "Action", "year":2000, "duration": 60, "watch_count": 5}
     ]
 
     assert movies == expected_result, f"Expected {expected_result}, but got {movies}"
@@ -285,8 +285,8 @@ def test_get_all_movies_empty_catalog(mock_cursor, caplog):
     # Assert that the SQL query was correct
     assert actual_query == expected_query, "The SQL query did not match the expected structure."
 
-def test_get_all_movies_ordered_by_play_count(mock_cursor):
-    """Test retrieving all movies ordered by play count."""
+def test_get_all_movies_ordered_by_watch_count(mock_cursor):
+    """Test retrieving all movies ordered by watch count."""
 
     # Simulate that there are multiple movies in the database
     mock_cursor.fetchall.return_value = [
@@ -295,24 +295,24 @@ def test_get_all_movies_ordered_by_play_count(mock_cursor):
         (3, "Director C", "Movie C", "Action",2000, 60, 5, False)
     ]
 
-    # Call the get_all_movies function with sort_by_play_count = True
-    movies = get_all_movies(sort_by_play_count=True)
+    # Call the get_all_movies function with sort_by_watch_count = True
+    movies = get_all_movies(sort_by_watch_count=True)
 
-    # Ensure the results are sorted by play count
+    # Ensure the results are sorted by watch count
     expected_result = [
         {"id": 1, "director": "Director A", "title": "Movie A", "genre": "Comedy", "year":2022, "duration": 120, "watch_count": 10},
-        {"id": 2, "director": "Director B", "title": "Movie B", "genre": "Romance", "year": 1989, "duration": 180, "play_count": 20},
-        {"id": 3, "director": "Director C", "title": "Movie C", "genre": "Action", "year":2000, "duration": 60, "play_count": 5}
+        {"id": 2, "director": "Director B", "title": "Movie B", "genre": "Romance", "year": 1989, "duration": 180, "watch_count": 20},
+        {"id": 3, "director": "Director C", "title": "Movie C", "genre": "Action", "year":2000, "duration": 60, "watch_count": 5}
     ]
 
     assert movies == expected_result, f"Expected {expected_result}, but got {movies}"
 
     # Ensure the SQL query was executed correctly
     expected_query = normalize_whitespace("""
-        SELECT id, director, title, genre, year, duration, play_count
+        SELECT id, director, title, genre, year, duration, watch_count
         FROM movies
         WHERE deleted = FALSE
-        ORDER BY play_count DESC
+        ORDER BY watch_count DESC
     """)
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
 
@@ -325,13 +325,13 @@ def test_update_watch_count(mock_cursor):
     # Simulate that the song exists and is not deleted (id = 1)
     mock_cursor.fetchone.return_value = [False]
 
-    # Call the update_play_count function with a sample song ID
+    # Call the update_watch_count function with a sample song ID
     movie_id = 1
     update_watch_count(movie_id)
 
     # Normalize the expected SQL query
     expected_query = normalize_whitespace("""
-        UPDATE movies SET watch_coutn = watch_count + 1 WHERE id = ?
+        UPDATE movies SET watch_count = watch_count + 1 WHERE id = ?
     """)
 
     # Ensure the SQL query was executed correctly
@@ -358,5 +358,5 @@ def test_update_watch_count_deleted_movie(mock_cursor):
     with pytest.raises(ValueError, match="Movie with ID 1 has been deleted"):
         update_watch_count(1)
 
-    # Ensure that no SQL query for updating play count was executed
+    # Ensure that no SQL query for updating watch count was executed
     mock_cursor.execute.assert_called_once_with("SELECT deleted FROM movies WHERE id = ?", (1,))
