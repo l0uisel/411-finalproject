@@ -56,6 +56,10 @@ def create_movie(title: str) -> None:
         raise e
 
     # Extract data from the response and validate it
+    director = data.get("Director")
+    genre = data.get("Genre")
+    year = int(data.get("Year"))
+    duration = int(data.get("Runtime").strip(" min"))
 
     try:
         # Use the context manager to handle the database connection
@@ -206,7 +210,7 @@ def get_movie_by_compound_key(director: str, title: str, year: int) -> Movie:
                 if row[6]:  # deleted flag
                     logger.info("Movie with director '%s', title '%s', and year %d has been deleted", director, title, year)
                     raise ValueError(f"Movie with director '{director}', title '{title}', and year {year} has been deleted")
-                logger.info("Movie with director '%s', title '%s', and year %d found", artist, title, year)
+                logger.info("Movie with director '%s', title '%s', and year %d found", director, title, year)
                 return Movie(id=row[0], director=row[1], title=row[2], genre=row[3], year=row[4], duration=row[5])
             else:
                 logger.info("Movie with director '%s', title '%s', and year %d not found", director, title, year)
