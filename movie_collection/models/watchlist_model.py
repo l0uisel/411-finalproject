@@ -5,9 +5,10 @@ from bcrypt import gensalt, hashpw, checkpw
 from typing import List
 
 from movie_collection.utils.logger import configure_logger
-from movie_collection.utils.rating_utils import get_rating
+from movie_collection.utils.omdb_utils import get_omdb_data
 from movie_collection.utils.sql_utils import get_db_connection
-from movie_collection.models.user_model import Movie, User, update_watch_count
+# from movie_collection.models.user_model import User, update_watch_count
+from movie_collection.models.movies_model import Movie, update_watch_count
 
 logger = logging.getLogger(__name__)
 configure_logger(logger)
