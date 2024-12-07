@@ -10,11 +10,11 @@ def watchlist_model():
 """Fixtures providing sample movies for the tests."""
 @pytest.fixture
 def sample_movie1():
-    return Movie(1, 'Director 1', 'Movie 1', 2022, 'Drama', 180)
+    return Movie(1, 1, 'Director 1', 'Movie 1', 2022, 'Drama', 180)
 
 @pytest.fixture
 def sample_movie2():
-    return Movie(2, 'Director 2', 'Movie 2', 2021, 'Comedy', 155)
+    return Movie(2, 2, 'Director 2', 'Movie 2', 2021, 'Comedy', 155)
 
 @pytest.fixture
 def sample_watchlist(sample_movie1, sample_movie2):
