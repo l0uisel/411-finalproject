@@ -206,13 +206,13 @@ def test_get_movie_by_id_bad_id(mock_cursor):
 
 def test_get_movie_by_compound_key(mock_cursor):
     # Simulate that the movie exists (director = "Director Name", title = "Movie Title", year = 2022)
-    mock_cursor.fetchone.return_value = (1, "Director Name", "Movie Title", "Comedy", 2022, 180, False)
+    mock_cursor.fetchone.return_value = (1, 1, "Director Name", "Movie Title", "Comedy", 2022, 180, False)
 
     # Call the function and check the result
     result = get_movie_by_compound_key("Director Name", "Movie Title", 2022)
 
     # Expected result based on the simulated fetchone return value
-    expected_result = Movie(1, "Director Name", "Movie Title", "Comedy", 2022, 180)
+    expected_result = Movie(1, 1, "Director Name", "Movie Title", "Comedy", 2022, 180)
 
     # Ensure the result matches the expected output
     assert result == expected_result, f"Expected {expected_result}, got {result}"
@@ -236,9 +236,9 @@ def test_get_all_movies(mock_cursor):
 
     # Simulate that there are multiple movies in the database
     mock_cursor.fetchall.return_value = [
-        (1, "Director A", "Movie A", "Comedy", 2022, 120, 10, False),
-        (2, "Director B", "Movie B", "Romance", 1989, 180, 20, False),
-        (3, "Director C", "Movie C", "Action",2000, 60, 5, False)
+        (1, 1, "Director A", "Movie A", "Comedy", 2022, 120, 10, False),
+        (2, 2, "Director B", "Movie B", "Romance", 1989, 180, 20, False),
+        (3, 3, "Director C", "Movie C", "Action",2000, 60, 5, False)
     ]
 
     # Call the get_all_movies function
@@ -246,16 +246,16 @@ def test_get_all_movies(mock_cursor):
 
     # Ensure the results match the expected output
     expected_result = [
-        {"id": 1, "director": "Director A", "title": "Movie A", "genre": "Comedy", "year":2022, "duration": 120, "watch_count": 10},
-        {"id": 2, "director": "Director B", "title": "Movie B", "genre": "Romance", "year": 1989, "duration": 180, "watch_count": 20},
-        {"id": 3, "director": "Director C", "title": "Movie C", "genre": "Action", "year":2000, "duration": 60, "watch_count": 5}
+        {"id": 1, "imdb_id": 1, "director": "Director A", "title": "Movie A", "genre": "Comedy", "year":2022, "duration": 120, "watch_count": 10},
+        {"id": 2, "imdb_id": 2, "director": "Director B", "title": "Movie B", "genre": "Romance", "year": 1989, "duration": 180, "watch_count": 20},
+        {"id": 3, "imdb_id": 3, "director": "Director C", "title": "Movie C", "genre": "Action", "year":2000, "duration": 60, "watch_count": 5}
     ]
 
     assert movies == expected_result, f"Expected {expected_result}, but got {movies}"
 
     # Ensure the SQL query was executed correctly
     expected_query = normalize_whitespace("""
-        SELECT id, director, title, genre, year, duration, watch_count
+        SELECT id, imdb_id, director, title, genre, year, duration, watch_count
         FROM movies
         WHERE deleted = FALSE
     """)
@@ -279,7 +279,7 @@ def test_get_all_movies_empty_catalog(mock_cursor, caplog):
     assert "The movie catalog is empty." in caplog.text, "Expected warning about empty catalog not found in logs."
 
     # Ensure the SQL query was executed correctly
-    expected_query = normalize_whitespace("SELECT id, director, title, genre, year, duration, watch_count FROM movies WHERE deleted = FALSE")
+    expected_query = normalize_whitespace("SELECT id, imdb_id, director, title, genre, year, duration, watch_count FROM movies WHERE deleted = FALSE")
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
 
     # Assert that the SQL query was correct
@@ -290,9 +290,9 @@ def test_get_all_movies_ordered_by_watch_count(mock_cursor):
 
     # Simulate that there are multiple movies in the database
     mock_cursor.fetchall.return_value = [
-        (1, "Director A", "Movie A", "Comedy", 2022, 120, 10, False),
-        (2, "Director B", "Movie B", "Romance", 1989, 180, 20, False),
-        (3, "Director C", "Movie C", "Action",2000, 60, 5, False)
+        (1, 1, "Director A", "Movie A", "Comedy", 2022, 120, 10, False),
+        (2, 2, "Director B", "Movie B", "Romance", 1989, 180, 20, False),
+        (3, 3,  "Director C", "Movie C", "Action",2000, 60, 5, False)
     ]
 
     # Call the get_all_movies function with sort_by_watch_count = True
@@ -300,16 +300,16 @@ def test_get_all_movies_ordered_by_watch_count(mock_cursor):
 
     # Ensure the results are sorted by watch count
     expected_result = [
-        {"id": 1, "director": "Director A", "title": "Movie A", "genre": "Comedy", "year":2022, "duration": 120, "watch_count": 10},
-        {"id": 2, "director": "Director B", "title": "Movie B", "genre": "Romance", "year": 1989, "duration": 180, "watch_count": 20},
-        {"id": 3, "director": "Director C", "title": "Movie C", "genre": "Action", "year":2000, "duration": 60, "watch_count": 5}
+        {"id": 1, "imdb_id": 1, "director": "Director A", "title": "Movie A", "genre": "Comedy", "year":2022, "duration": 120, "watch_count": 10},
+        {"id": 2, "imdb_id": 2, "director": "Director B", "title": "Movie B", "genre": "Romance", "year": 1989, "duration": 180, "watch_count": 20},
+        {"id": 3, "imdb_id": 3, "director": "Director C", "title": "Movie C", "genre": "Action", "year":2000, "duration": 60, "watch_count": 5}
     ]
 
     assert movies == expected_result, f"Expected {expected_result}, but got {movies}"
 
     # Ensure the SQL query was executed correctly
     expected_query = normalize_whitespace("""
-        SELECT id, director, title, genre, year, duration, watch_count
+        SELECT id, imdb_id, director, title, genre, year, duration, watch_count
         FROM movies
         WHERE deleted = FALSE
         ORDER BY watch_count DESC
