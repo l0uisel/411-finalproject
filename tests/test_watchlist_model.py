@@ -172,7 +172,7 @@ def test_get_watchlist_length(watchlist_model, sample_watchlist):
 def test_get_watchlist_duration(watchlist_model, sample_watchlist):
     """Test getting the total duration of the watchlist."""
     watchlist_model.watchlist.extend(sample_watchlist)
-    assert watchlist_model.get_watchlist_duration() == 335, "Expected watchlist duration to be 360 seconds"
+    assert watchlist_model.get_watchlist_duration() == 335, "Expected watchlist duration to be 360 minutes"
 
 ##################################################
 # Utility Function Test Cases
