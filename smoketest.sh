@@ -384,6 +384,62 @@ get_movie_leaderboard() {
   fi
 }
 
+######################################################
+#
+# User
+#
+######################################################
+
+# Function to log in a user
+login(){
+  username=$1
+  password=$2
+
+  echo "Logging in..."
+  curl -s -X POST "$BASE_URL/login" -H "Content-Type: application/json" \
+    -d "{\"username\":\"$username\", \"password\":\"$password\"}" | grep -q '"status": "success"'
+  if [ $? -eq 0 ]; then
+    echo "Logged in successfully."
+  else
+    echo "Failed to log in."
+    exit 1
+  fi
+}
+
+# Function to create a user account
+create_account() {
+  username=$1
+  password=$2
+
+  echo "Creating a user account..."
+  curl -s -X POST "$BASE_URL/create-account" -H "Content-Type: application/json" \
+    -d "{\"username\":\"$username\", \"password\":\"$password\"}" | grep -q '"status": "success"'
+  if [ $? -eq 0 ]; then
+    echo "User account created successfully."
+  else
+    echo "Failed to create user account."
+    exit 1
+  fi
+}
+
+# Function to update password
+update_password(){
+  username=$1
+  old_password=$2
+  new_password=$3
+
+  echo "Updating password..."
+  curl -s -X POST "$BASE_URL/update-password" -H "Content-Type: application/json" \
+    -d "{\"username\":\"$username\", \"old_password\":\"$old_password\", \"new_password\":\"$new_password\"}" | grep -q '"status": "success"'
+  if [ $? -eq 0 ]; then
+    echo "Password updated successfully."
+  else
+    echo "Failed to update password."
+    exit 1
+  fi
+}
+
+
 
 # Health checks
 check_health
@@ -431,5 +487,9 @@ get_movie_from_watchlist_by_list_number 1
 get_watchlist_length_duration
 
 get_movie_leaderboard
+
+create_account "testuser" "password"
+login "testuser" "password"
+update_password "testuser" "password" "newpassword"
 
 echo "All tests passed successfully!"

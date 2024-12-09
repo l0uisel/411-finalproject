@@ -5,6 +5,7 @@ from flask import Flask, jsonify, make_response, Response, request
 from movie_collection.models import movies_model
 from movie_collection.models.watchlist_model import WatchlistModel
 from movie_collection.utils.sql_utils import check_database_connection, check_table_exists
+from movie_collection.models import user_model
 
 
 # Load environment variables from .env file
@@ -594,6 +595,84 @@ def get_movie_leaderboard() -> Response:
     except Exception as e:
         app.logger.error(f"Error generating leaderboard: {e}")
         return make_response(jsonify({'error': str(e)}), 500)
+
+############################################################
+#
+# User
+#
+############################################################
+@app.route('/api/login', methods=['POST'])
+def login() -> Response:
+    """
+    Route to validate a user's credentials.
+    Returns:
+
+    """
+    app.logger.info("Validating user credentials")
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+        if not username or not password:
+            return make_response(jsonify({'error': 'Invalid input, all fields are required with valid values'}), 400)
+        app.logger.info(f"Validating account: {username}")
+        is_valid = user_model.validate_user(username, password)
+        if is_valid:
+            app.logger.info(f"Account validated: {username}")
+            return make_response(jsonify({'status': 'success', 'username': username}), 201)
+        else:
+            app.logger.warning(f"Invalid credentials for user: {username}")
+            return make_response(jsonify({'error': 'Invalid credentials'}), 401)
+
+    except Exception as e:
+        app.logger.error(f"Error validating user credentials: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/create-account', methods=['POST'])
+def create_account() -> Response:
+    """
+    Route to create a new user account.
+
+    Returns:
+        JSON response indicating success of the account creation or error message.
+    Raises:
+        400 error if the input is invalid.
+        500 error if there is an issue creating the account.
+    """
+    app.logger.info("Creating a new user account")
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+        if not username or not password:
+            return make_response(jsonify({'error': 'Invalid input, all fields are required with valid values'}), 400)
+        app.logger.info(f"Creating account: {username}")
+        user_model.create_user(username, password)
+        app.logger.info(f"Account created: {username}")
+        return make_response(jsonify({'status': 'success', 'username': username}), 201)
+    except Exception as e:
+        app.logger.error(f"Error creating account: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/update-password', methods=['POST'])
+def update_password() -> Response:
+    app.logger.info("Updating user password")
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        old_password = data.get('old_password')
+        new_password = data.get('new_password')
+        if not username or not old_password or not new_password:
+            return make_response(jsonify({'error': 'Invalid input, all fields are required with valid values'}), 400)
+        app.logger.info(f"Updating password: {username}")
+        user_model.update_password(username, old_password, new_password)
+        app.logger.info(f"Password updated: {username}")
+        return make_response(jsonify({'status': 'success', 'username': username}), 201)
+    except Exception as e:
+        app.logger.error(f"Error updating user password: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+
 
 if __name__ == '__main__':
     port = os.getenv("PORT")

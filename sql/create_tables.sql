@@ -11,6 +11,7 @@ CREATE TABLE movies (
     deleted BOOLEAN DEFAULT FALSE,
     UNIQUE(director, title, year)
 );
+DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,

@@ -88,12 +88,13 @@ def validate_user(username: str, password: str) -> bool:
         logger.error("Database error during user validation: %s", e)
         return False
 
-def update_password(username: str, new_password: str) -> None:
+def update_password(username: str, old_password:str, new_password: str) -> None:
     """
     Updates a user's password.
 
     Args:
         username (str): The username of the user.
+        old_password (str): The old plaintext password.
         new_password (str): The new plaintext password.
 
     Raises:
@@ -103,19 +104,23 @@ def update_password(username: str, new_password: str) -> None:
     new_salt = gensalt().decode('utf-8')
     new_hashed_password = hash_password(new_password, new_salt)
 
-    try:
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                UPDATE users
-                SET salt = ?, hashed_password = ?
-                WHERE username = ?
-            """, (new_salt, new_hashed_password, username))
-            if cursor.rowcount == 0:
-                logger.warning("User %s not found while updating password.", username)
-                raise ValueError(f"User {username} not found.")
-            conn.commit()
-            logger.info("Password for user %s updated successfully.", username)
-    except sqlite3.Error as e:
-        logger.error("Database error while updating password for user %s: %s", username, e)
-        raise ValueError(f"Database error: {e}")
+    if not validate_user(username, old_password):
+        logger.warning("Invalid credentials while updating password for user %s.", username)
+        raise ValueError("Invalid credentials.")
+    else:
+        try:
+            with get_db_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    UPDATE users
+                    SET salt = ?, hashed_password = ?
+                    WHERE username = ?
+                """, (new_salt, new_hashed_password, username))
+                if cursor.rowcount == 0:
+                    logger.warning("User %s not found while updating password.", username)
+                    raise ValueError(f"User {username} not found.")
+                conn.commit()
+                logger.info("Password for user %s updated successfully.", username)
+        except sqlite3.Error as e:
+            logger.error("Database error while updating password for user %s: %s", username, e)
+            raise ValueError(f"Database error: {e}")
