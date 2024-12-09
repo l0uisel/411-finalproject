@@ -71,8 +71,8 @@ def create_movie(title: str) -> None:
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (imdb_id, director, title, genre, year, duration))
             conn.commit()
-
-            logger.info("Movie created successfully: %s - %s (%d)", director, title, year) 
+            logger.info("Movie created successfully: %s - %s (%d)", director, title, year)
+        return Movie(id=row[0], imdb_id=row[1], director=row[2], title=row[3], genre=row[4], year=row[5], duration=row[6])
 
     except sqlite3.IntegrityError as e:
         logger.error("Movie with director '%s', title '%s', and year %d already exists.", director, title, year)

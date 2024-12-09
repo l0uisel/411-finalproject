@@ -36,7 +36,7 @@ def healthcheck() -> Response:
 @app.route('/api/db-check', methods=['GET'])
 def db_check() -> Response:
     """
-    Route to check if the database connection and songs table are functional.
+    Route to check if the database connection and movie table are functional.
 
     Returns:
         JSON response indicating the database health status.
@@ -47,7 +47,7 @@ def db_check() -> Response:
         app.logger.info("Checking database connection...")
         check_database_connection()
         app.logger.info("Database connection is OK.")
-        app.logger.info("Checking if songs table exists...")
+        app.logger.info("Checking if movies table exists...")
         check_table_exists("movies")
         app.logger.info("movies table exists.")
         check_table_exists("users")
@@ -61,23 +61,156 @@ def db_check() -> Response:
 # Movie Management
 #
 ##########################################################
+@app.route('/api/create-movie', methods=['POST'])
+def add_movie() -> Response:
+    """
+    Route to add a new movie to the watchlist.
+
+    Expected JSON Input:
+        - director (str): The director's name.
+        - title (str): The movie title.
+        - year (int): The year the movie was released.
+        - genre (str): The genre of the movie.
+        - duration (int): The duration of the movie in minutes.
+
+    Returns:
+        JSON response indicating the success of the movie addition.
+    Raises:
+        400 error if input validation fails.
+        500 error if there is an issue adding the movie to the watchlist.
+    """
+    app.logger.info('Adding a new movie to the catalog')
+    try:
+        data = request.get_json()
+        title = data.get('title')
+
+        if not title:
+            return make_response(jsonify({'error': 'Invalid input, all fields are required with valid values'}), 400)
+
+        app.logger.info('Adding movie: %s', title)
+        movies_model.create_movie(title=title)
+        app.logger.info("movie created: %s",title)
+        return make_response(jsonify({'status': 'success', 'movie': title}), 201)
+    except Exception as e:
+        app.logger.error("Failed to add movie: %s", str(e))
+        return make_response(jsonify({'error': str(e)}), 500)
 
 
 @app.route('/api/clear-catalog', methods=['DELETE'])
 def clear_catalog() -> Response:
     """
-    Route to clear the entire song catalog (recreates the table).
+    Route to clear the entire movies catalog (recreates the table).
 
     Returns:
         JSON response indicating success of the operation or error message.
     """
     try:
-        app.logger.info("Clearing the song catalog")
+        app.logger.info("Clearing the movies catalog")
         movies_model.clear_catalog()
         return make_response(jsonify({'status': 'success'}), 200)
     except Exception as e:
         app.logger.error(f"Error clearing catalog: {e}")
         return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/delete-movie/<int:movie_id>', methods=['DELETE'])
+def delete_movie(movie_id: int) -> Response:
+    """
+    Route to delete a movie by its ID (soft delete).
+
+    Path Parameter:
+        - movie_id (int): The ID of the movie to delete.
+
+    Returns:
+        JSON response indicating success of the operation or error message.
+    """
+    try:
+        app.logger.info(f"Deleting movie by ID: {movie_id}")
+        movies_model.delete_movie(movie_id)
+        return make_response(jsonify({'status': 'success'}), 200)
+    except Exception as e:
+        app.logger.error(f"Error deleting movie: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+
+@app.route('/api/get-all-movies-from-catalog', methods=['GET'])
+def get_all_movies() -> Response:
+    """
+    Route to retrieve all movies in the catalog (non-deleted), with an option to sort by play count.
+
+    Query Parameter:
+        - sort_by_play_count (bool, optional): If true, sort movies by play count.
+
+    Returns:
+        JSON response with the list of movies or error message.
+    """
+    try:
+        # Extract query parameter for sorting by play count
+        sort_by_play_count = request.args.get('sort_by_play_count', 'false').lower() == 'true'
+
+        app.logger.info("Retrieving all movies from the catalog, sort_by_play_count=%s", sort_by_play_count)
+        movies = movies_model.get_all_movies(sort_by_play_count=sort_by_play_count)
+
+        return make_response(jsonify({'status': 'success', 'movies': movies}), 200)
+    except Exception as e:
+        app.logger.error(f"Error retrieving movies: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+
+@app.route('/api/get-movie-from-catalog-by-id/<int:movie_id>', methods=['GET'])
+def get_movie_by_id(movie_id: int) -> Response:
+    """
+    Route to retrieve a movie by its ID.
+
+    Path Parameter:
+        - movie_id (int): The ID of the movie.
+
+    Returns:
+        JSON response with the movie details or error message.
+    """
+    try:
+        app.logger.info(f"Retrieving movie by ID: {movie_id}")
+        movie = movies_model.get_movie_by_id(movie_id)
+        return make_response(jsonify({'status': 'success', 'movie': movie}), 200)
+    except Exception as e:
+        app.logger.error(f"Error retrieving movie by ID: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/get-movie-from-catalog-by-compound-key', methods=['GET'])
+def get_movie_by_compound_key() -> Response:
+    """
+    Route to retrieve a movie by its compound key (director, title, year).
+
+    Query Parameters:
+        - director (str): The director's name.
+        - title (str): The movie title.
+        - year (int): The year the movie was released.
+
+    Returns:
+        JSON response with the movie details or error message.
+    """
+    try:
+        # Extract query parameters from the request
+        director = request.args.get('director')
+        title = request.args.get('title')
+        year = request.args.get('year')
+
+        if not director or not title or not year:
+            return make_response(jsonify({'error': 'Missing required query parameters: artist, title, year'}), 400)
+
+        # Attempt to cast year to an integer
+        try:
+            year = int(year)
+        except ValueError:
+            return make_response(jsonify({'error': 'Year must be an integer'}), 400)
+
+        app.logger.info(f"Retrieving song by compound key: {director}, {title}, {year}")
+        movie = movies_model.get_movie_by_compound_key(director, title, year)
+        return make_response(jsonify({'status': 'success', 'movie': movie}), 200)
+
+    except Exception as e:
+        app.logger.error(f"Error retrieving movie by compound key: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
 
 ############################################################
 #
