@@ -56,6 +56,7 @@ def create_movie(title: str) -> None:
         raise e
 
     # Extract data from the response and validate it
+    imdb_id = data.get("imdbID")
     director = data.get("Director")
     genre = data.get("Genre")
     year = int(data.get("Year"))
@@ -66,16 +67,16 @@ def create_movie(title: str) -> None:
         with get_db_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO movies (director, title, genre, year, duration)
-                VALUES (?, ?, ?, ?, ?)
-            """, (director, title, genre, year, duration))
+                INSERT INTO movies (imdb_id, director, title, genre, year, duration)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (imdb_id, director, title, genre, year, duration))
             conn.commit()
 
             logger.info("Movie created successfully: %s - %s (%d)", director, title, year) #maybe add back director
 
     except sqlite3.IntegrityError as e:
         logger.error("Movie with director '%s', title '%s', and year %d already exists.", director, title, year)
-        raise ValueError(f"Movie with artist '{director}', title '{title}', and year {year} already exists.") from e
+        raise ValueError(f"Movie with director '{director}', title '{title}', and year {year} already exists.") from e
     except sqlite3.Error as e:
         logger.error("Database error while creating movie: %s", str(e))
         raise sqlite3.Error(f"Database error: {str(e)}")
@@ -158,18 +159,18 @@ def get_movie_by_id(movie_id: int) -> Movie:
             cursor = conn.cursor()
             logger.info("Attempting to retrieve movie with ID %s", movie_id)
             cursor.execute("""
-                SELECT id, director, title, genre, year, duration, deleted
+                SELECT id, imdb_id, director, title, genre, year, duration, deleted
                 FROM movies
                 WHERE id = ?
             """, (movie_id,))
             row = cursor.fetchone()
 
             if row:
-                if row[6]:  # deleted flag
+                if row[7]:  # deleted flag
                     logger.info("Movie with ID %s has been deleted", movie_id)
                     raise ValueError(f"Movie with ID {movie_id} has been deleted")
                 logger.info("Movie with ID %s found", movie_id)
-                return Movie(id=row[0], director=row[1], title=row[2], genre=row[3], year=row[4], duration=row[5])
+                return Movie(id=row[0], imdb_id=row[1], director=row[2], title=row[3], genre=row[4], year=row[5], duration=row[6])
             else:
                 logger.info("Movie with ID %s not found", movie_id)
                 raise ValueError(f"Movie with ID {movie_id} not found")
@@ -200,18 +201,18 @@ def get_movie_by_compound_key(director: str, title: str, year: int) -> Movie:
             cursor = conn.cursor()
             logger.info("Attempting to retrieve movie with director '%s', title '%s', and year %d", director, title, year)
             cursor.execute("""
-                SELECT id, director, title, genre, year, duration, deleted
+                SELECT id, imdb_id, director, title, genre, year, duration, deleted
                 FROM movies
                 WHERE director = ? AND title = ? AND year = ?
             """, (director, title, year))
             row = cursor.fetchone()
 
             if row:
-                if row[6]:  # deleted flag
+                if row[7]:  # deleted flag
                     logger.info("Movie with director '%s', title '%s', and year %d has been deleted", director, title, year)
                     raise ValueError(f"Movie with director '{director}', title '{title}', and year {year} has been deleted")
                 logger.info("Movie with director '%s', title '%s', and year %d found", director, title, year)
-                return Movie(id=row[0], director=row[1], title=row[2], genre=row[3], year=row[4], duration=row[5])
+                return Movie(id=row[0],imdb_id=row[1], director=row[2], title=row[3], genre=row[4], year=row[5], duration=row[6])
             else:
                 logger.info("Movie with director '%s', title '%s', and year %d not found", director, title, year)
                 raise ValueError(f"Movie with director '{director}', title '{title}', and year {year} not found")
@@ -242,7 +243,7 @@ def get_all_movies(sort_by_watch_count: bool = False) -> list[dict]: #do i need 
 
             # Determine the sort order based on the 'sort_by_play_count' flag
             query = """
-                SELECT id, director, title, genre, year, duration, watch_count
+                SELECT id, imdb_id, director, title, genre, year, duration, watch_count
                 FROM movies
                 WHERE deleted = FALSE
             """
@@ -259,17 +260,18 @@ def get_all_movies(sort_by_watch_count: bool = False) -> list[dict]: #do i need 
             movies = [
                 {
                     "id": row[0],
-                    "director": row[1],
-                    "title": row[2],
-                    "genre": row[3],
-                    "year": row[4],
-                    "duration": row[5],
-                    "watch_count": row[6],
+                    "imdb_id": row[1],
+                    "director": row[2],
+                    "title": row[3],
+                    "genre": row[4],
+                    "year": row[5],
+                    "duration": row[6],
+                    "watch_count": row[7],
                 }
                 for row in rows
             ]
-            logger.info("Retrieved %d movies from the catalog", len(Movie))
-            return Movie
+            logger.info("Retrieved %d movies from the catalog", len(movies))
+            return movies
 
     except sqlite3.Error as e:
         logger.error("Database error while retrieving all movies: %s", str(e))
@@ -293,7 +295,7 @@ def update_watch_count(movie_id: int) -> None:
             logger.info("Attempting to update movie count for movie with ID %d", movie_id)
 
             # Check if the movie exists and if it's deleted
-            cursor.execute("SELECT deleted FROM moviess WHERE id = ?", (movie_id,))
+            cursor.execute("SELECT deleted FROM movies WHERE id = ?", (movie_id,))
             try:
                 deleted = cursor.fetchone()[0]
                 if deleted:

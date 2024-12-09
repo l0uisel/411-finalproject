@@ -23,7 +23,7 @@ def mock_omdb_com(mocker):
     return mock_response
 
 
-def test_get_random(mock_omdb_com):
+def test_get_data(mock_omdb_com):
     """Test retrieving a random number from random.org."""
     result = get_omdb_data(TEST_TITLE)
 
@@ -33,23 +33,24 @@ def test_get_random(mock_omdb_com):
     # Ensure that the correct URL was called
     requests.get.assert_called_once_with(f"https://www.omdbapi.com/?t={TEST_TITLE}&apikey={API_KEY}", timeout=5)
 
-def test_get_random_request_failure(mocker):
+def test_get_data_request_failure(mocker):
     """Simulate  a request failure."""
     mocker.patch("requests.get", side_effect=requests.exceptions.RequestException("Connection error"))
 
     with pytest.raises(RuntimeError, match="Request to omdbapi.com failed: Connection error"):
         get_omdb_data(TEST_TITLE)
 
-def test_get_random_timeout(mocker):
+def test_get_data_timeout(mocker):
     """Simulate  a timeout."""
     mocker.patch("requests.get", side_effect=requests.exceptions.Timeout)
 
     with pytest.raises(RuntimeError, match="Request to omdbapi.com timed out."):
         get_omdb_data(TEST_TITLE)
 
-def test_get_random_invalid_response(mock_omdb_com):
+def test_get_data_invalid_response(mock_omdb_com):
     """Simulate  an invalid response (non-digit)."""
     mock_omdb_com.json.return_value = json.loads(INVALID_RESPONSE)
 
     with pytest.raises(ValueError, match="Invalid response from omdbapi.com: Movie not found!"):
-        get_omdb_data(TEST_TITLE)
+        get_omdb_data("invalid title")
+

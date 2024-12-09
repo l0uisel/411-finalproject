@@ -9,7 +9,7 @@ CREATE TABLE movies (
     duration INTEGER NOT NULL CHECK(duration > 0),
     play_count INTEGER DEFAULT 0,
     deleted BOOLEAN DEFAULT FALSE,
-    UNIQUE(artist, title, year)
+    UNIQUE(director, title, year)
 );
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
