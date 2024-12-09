@@ -318,10 +318,10 @@ def test_get_all_movies_ordered_by_watch_count(mock_cursor):
 def test_update_watch_count(mock_cursor):
     """Test updating the watch count of a movie."""
 
-    # Simulate that the song exists and is not deleted (id = 1)
+    # Simulate that the movie exists and is not deleted (id = 1)
     mock_cursor.fetchone.return_value = [False]
 
-    # Call the update_watch_count function with a sample song ID
+    # Call the update_watch_count function with a sample movie ID
     movie_id = 1
     update_watch_count(movie_id)
 
@@ -339,7 +339,7 @@ def test_update_watch_count(mock_cursor):
     # Extract the arguments used in the SQL call
     actual_arguments = mock_cursor.execute.call_args_list[1][0][1]
 
-    # Assert that the SQL query was executed with the correct arguments (song ID)
+    # Assert that the SQL query was executed with the correct arguments (movie ID)
     expected_arguments = (movie_id,)
     assert actual_arguments == expected_arguments, f"The SQL query arguments did not match. Expected {expected_arguments}, got {actual_arguments}."
 
@@ -350,7 +350,7 @@ def test_update_watch_count_deleted_movie(mock_cursor):
     # Simulate that the movie exists but is marked as deleted (id = 1)
     mock_cursor.fetchone.return_value = [True]
 
-    # Expect a ValueError when attempting to update a deleted song
+    # Expect a ValueError when attempting to update a deleted movie
     with pytest.raises(ValueError, match="Movie with ID 1 has been deleted"):
         update_watch_count(1)
 

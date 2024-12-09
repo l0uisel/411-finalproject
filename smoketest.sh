@@ -1,7 +1,8 @@
 #!/bin/bash
 
+source .env
 # Define the base URL for the Flask API
-BASE_URL="http://localhost:5000/api"
+BASE_URL="http://localhost:$PORT/api"
 
 # Flag to control whether to echo JSON output
 ECHO_JSON=false
@@ -53,16 +54,18 @@ check_db() {
 #
 ##########################################################
 
-create_movie() {
-  director=$1
-  title=$2
-  year=$3
-  genre=$4
-  duration=$5
+clear_catalog() {
+  echo "Clearing the watchlist..."
+  curl -s -X DELETE "$BASE_URL/clear-catalog" | grep -q '"status": "success"'
+}
 
-  echo "Adding movie ($director - $title, $year) to the watchlist..."
+
+create_movie() {
+  title=$1
+
+  echo "Adding movie ($title) to the watchlist..."
   curl -s -X POST "$BASE_URL/create-movie" -H "Content-Type: application/json" \
-    -d "{\"director\":\"$director\", \"title\":\"$title\", \"year\":$year, \"genre\":\"$genre\", \"duration\":$duration}" | grep -q '"status": "success"'
+    -d "{\"title\":\"$title\"}" | grep -q '"status": "success"'
 
   if [ $? -eq 0 ]; then
     echo "Movie added successfully."
@@ -135,22 +138,6 @@ get_movie_by_compound_key() {
     exit 1
   fi
 }
-
-get_random_movie() {
-  echo "Getting a random movie from the catalog..."
-  response=$(curl -s -X GET "$BASE_URL/get-random-movie")
-  if echo "$response" | grep -q '"status": "success"'; then
-    echo "Random movie retrieved successfully."
-    if [ "$ECHO_JSON" = true ]; then
-      echo "Random Movie JSON:"
-      echo "$response" | jq .
-    fi
-  else
-    echo "Failed to get a random movie."
-    exit 1
-  fi
-}
-
 
 ############################################################
 #
@@ -381,14 +368,14 @@ swap_movies_in_watchlist() {
 #
 ######################################################
 
-# Function to get the movie leaderboard sorted by play count
+# Function to get the movie leaderboard sorted by watch count
 get_movie_leaderboard() {
-  echo "Getting movie leaderboard sorted by play count..."
-  response=$(curl -s -X GET "$BASE_URL/movie-leaderboard?sort=play_count")
+  echo "Getting movie leaderboard sorted by watch count..."
+  response=$(curl -s -X GET "$BASE_URL/movie-leaderboard?sort=watch_count")
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Movie leaderboard retrieved successfully."
     if [ "$ECHO_JSON" = true ]; then
-      echo "Leaderboard JSON (sorted by play count):"
+      echo "Leaderboard JSON (sorted by watch count):"
       echo "$response" | jq .
     fi
   else
@@ -402,22 +389,26 @@ get_movie_leaderboard() {
 check_health
 check_db
 
+#Clear the catalog
+clear_catalog
+
 # Create movies
-create_movie "Alexander Payne" "The Holdovers" 2023 "Comedy" 133
-create_movie "Nick Cassavetes" "The Notebook" 2004 "Romance" 124
-create_movie "Christopher Nolan" "Interstellar" 2014 "Sci-fi" 180
-create_movie "Wes Craven" "Scream" 1969 "Horror" 111
-create_movie "Sidney Lumet" "12 Angry Men" 1957 "Crime" 96
+create_movie "The Holdovers"
+create_movie "The Notebook"
+create_movie "Interstellar"
+create_movie "Scream"
+create_movie "12 Angry Men"
 
 delete_movie_by_id 1
 get_all_movies
 
 get_movie_by_id 2
 get_movie_by_compound_key "Christopher Nolan" "Interstellar" 2014
-get_random_movie
+
+clear_watchlist
 
 add_movie_to_watchlist "Nick Cassavetes" "The Notebook" 2004
-add_movie_to_watchlist "Wes Craven" "Scream" 1969 "Horror" 111
+add_movie_to_watchlist "Wes Craven" "Scream" 1996
 add_movie_to_watchlist "Sidney Lumet" "12 Angry Men" 1957
 add_movie_to_watchlist "Christopher Nolan" "Interstellar" 2014
 
@@ -426,11 +417,11 @@ remove_movie_by_list_number 2
 
 get_all_movies_from_watchlist
 
-add_movie_to_watchlist "Wes Craven" "Scream" 1969 "Horror" 111
+add_movie_to_watchlist "Wes Craven" "Scream" 1996
 add_movie_to_watchlist "Christopher Nolan" "Interstellar" 2014
 
 move_movie_to_beginning "Christopher Nolan" "Interstellar" 2014
-move_movie_to_end "Wes Craven" "Scream" 1969 "Horror" 111
+move_movie_to_end "Wes Craven" "Scream" 1996
 move_movie_to_list_number "Sidney Lumet" "12 Angry Men" 1957 2
 swap_movies_in_watchlist 1 2
 

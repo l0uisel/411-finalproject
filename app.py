@@ -135,20 +135,20 @@ def delete_movie(movie_id: int) -> Response:
 @app.route('/api/get-all-movies-from-catalog', methods=['GET'])
 def get_all_movies() -> Response:
     """
-    Route to retrieve all movies in the catalog (non-deleted), with an option to sort by play count.
+    Route to retrieve all movies in the catalog (non-deleted), with an option to sort by watch count.
 
     Query Parameter:
-        - sort_by_play_count (bool, optional): If true, sort movies by play count.
+        - sort_by_watch_count (bool, optional): If true, sort movies by watch count.
 
     Returns:
         JSON response with the list of movies or error message.
     """
     try:
-        # Extract query parameter for sorting by play count
-        sort_by_play_count = request.args.get('sort_by_play_count', 'false').lower() == 'true'
+        # Extract query parameter for sorting by watch count
+        sort_by_watch_count = request.args.get('sort_by_watch_count', 'false').lower() == 'true'
 
-        app.logger.info("Retrieving all movies from the catalog, sort_by_play_count=%s", sort_by_play_count)
-        movies = movies_model.get_all_movies(sort_by_play_count=sort_by_play_count)
+        app.logger.info("Retrieving all movies from the catalog, sort_by_watch_count=%s", sort_by_watch_count)
+        movies = movies_model.get_all_movies(sort_by_watch_count=sort_by_watch_count)
 
         return make_response(jsonify({'status': 'success', 'movies': movies}), 200)
     except Exception as e:
@@ -196,6 +196,7 @@ def get_movie_by_compound_key() -> Response:
 
         if not director or not title or not year:
             return make_response(jsonify({'error': 'Missing required query parameters: director, title, year'}), 400)
+
 
         # Attempt to cast year to an integer
         try:
@@ -335,17 +336,265 @@ def clear_watchlist() -> Response:
     except Exception as e:
         app.logger.error(f"Error clearing the watchlist: {e}")
         return make_response(jsonify({'error': str(e)}), 500)
+    
+@app.route('/api/get-all-movies-from-watchlist', methods=['GET'])
+def get_all_movies_from_watchlist() -> Response:
+    """
+    Route to retrieve all movies in the watchlist.
+
+    Returns:
+        JSON response with the list of movies or an error message.
+    """
+    try:
+        app.logger.info("Retrieving all movies from the watchlist")
+
+        # Get all movies from the watchlist
+        movies = watchlist_model.get_all_movies()
+
+        return make_response(jsonify({'status': 'success', 'movies': movies}), 200)
+
+    except Exception as e:
+        app.logger.error(f"Error retrieving movies from watchlist: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/get-movie-from-watchlist-by-list-number/<int:list_number>', methods=['GET'])
+def get_movie_by_list_number(list_number: int) -> Response:
+    """
+    Route to retrieve a movie by its list number from the watchlist.
+
+    Path Parameter:
+        - list_number (int): The list number of the movie.
+
+    Returns:
+        JSON response with the movie details or error message.
+    """
+    try:
+        app.logger.info(f"Retrieving movie from watchlist by list number: {list_number}")
+
+        # Get the movie by list number
+        movie = watchlist_model.get_movie_by_list_number(list_number)
+
+        return make_response(jsonify({'status': 'success', 'movie': movie}), 200)
+
+    except ValueError as e:
+        app.logger.error(f"Error retrieving movie by list number: {e}")
+        return make_response(jsonify({'error': str(e)}), 404)
+    except Exception as e:
+        app.logger.error(f"Error retrieving movie from watchlist: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/get-watchlist-length-duration', methods=['GET'])
+def get_watchlist_length_and_duration() -> Response:
+    """
+    Route to retrieve both the length (number of movies) and the total duration of the watchlist.
+
+    Returns:
+        JSON response with the watchlist length and total duration or error message.
+    """
+    try:
+        app.logger.info("Retrieving watchlist length and total duration")
+
+        # Get watchlist length and duration
+        watchlist_length = watchlist_model.get_watchlist_length()
+        watchlist_duration = watchlist_model.get_watchlist_duration()
+
+        return make_response(jsonify({
+            'status': 'success',
+            'watchlist_length': watchlist_length,
+            'watchlist_duration': watchlist_duration
+        }), 200)
+
+    except Exception as e:
+        app.logger.error(f"Error retrieving watchlist length and duration: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/go-to-list-number/<int:list_number>', methods=['POST'])
+def go_to_list_number(list_number: int) -> Response:
+    """
+    Route to set the watchlist to start playing from a specific list number.
+
+    Path Parameter:
+        - list_number (int): The list number to set as the current movie.
+
+    Returns:
+        JSON response indicating success or an error message.
+    """
+    try:
+        app.logger.info(f"Going to list number: {list_number}")
+
+        # Set the watchlist to start at the given list number
+        watchlist_model.go_to_list_number(list_number)
+
+        return make_response(jsonify({'status': 'success', 'list_number': list_number}), 200)
+    except ValueError as e:
+        app.logger.error(f"Error going to list number {list_number}: {e}")
+        return make_response(jsonify({'error': str(e)}), 400)
+    except Exception as e:
+        app.logger.error(f"Error going to list number: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
 
 ############################################################
 #
-# Arrange Watchlist
+# Arrange watchlist
 #
 ############################################################
+
+@app.route('/api/move-movie-to-beginning', methods=['POST'])
+def move_movie_to_beginning() -> Response:
+    """
+    Route to move a movie to the beginning of the watchlist.
+
+    Expected JSON Input:
+        - director (str): The director of the movie.
+        - title (str): The title of the movie.
+        - year (int): The year the movie was released.
+
+    Returns:
+        JSON response indicating success or an error message.
+    """
+    try:
+        data = request.get_json()
+
+        director = data.get('director')
+        title = data.get('title')
+        year = data.get('year')
+
+        app.logger.info(f"Moving movie to beginning: {director} - {title} ({year})")
+
+        # Retrieve movie by compound key and move it to the beginning
+        movie = movies_model.get_movie_by_compound_key(director, title, year)
+        watchlist_model.move_movie_to_beginning(movie.id)
+
+        return make_response(jsonify({'status': 'success', 'movie': f'{director} - {title}'}), 200)
+    except Exception as e:
+        app.logger.error(f"Error moving movie to beginning: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/move-movie-to-end', methods=['POST'])
+def move_movie_to_end() -> Response:
+    """
+    Route to move a movie to the end of the watchlist.
+
+    Expected JSON Input:
+        - director (str): The director of the movie.
+        - title (str): The title of the movie.
+        - year (int): The year the movie was released.
+
+    Returns:
+        JSON response indicating success or an error message.
+    """
+    try:
+        data = request.get_json()
+
+        director = data.get('director')
+        title = data.get('title')
+        year = data.get('year')
+
+        app.logger.info(f"Moving movie to end: {director} - {title} ({year})")
+
+        # Retrieve movie by compound key and move it to the end
+        movie = movies_model.get_movie_by_compound_key(director, title, year)
+        watchlist_model.move_movie_to_end(movie.id)
+
+        return make_response(jsonify({'status': 'success', 'movie': f'{director} - {title}'}), 200)
+    except Exception as e:
+        app.logger.error(f"Error moving movie to end: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/move-movie-to-list-number', methods=['POST'])
+def move_movie_to_list_number() -> Response:
+    """
+    Route to move a movie to a specific list number in the watchlist.
+
+    Expected JSON Input:
+        - director (str): The director of the movie.
+        - title (str): The title of the movie.
+        - year (int): The year the movie was released.
+        - list_number (int): The new list number to move the movie to.
+
+    Returns:
+        JSON response indicating success or an error message.
+    """
+    try:
+        data = request.get_json()
+
+        director = data.get('director')
+        title = data.get('title')
+        year = data.get('year')
+        list_number = data.get('list_number')
+
+        app.logger.info(f"Moving movie to list number {list_number}: {director} - {title} ({year})")
+
+        # Retrieve movie by compound key and move it to the specified list number
+        movie = movies_model.get_movie_by_compound_key(director, title, year)
+        watchlist_model.move_movie_to_list_number(movie.id, list_number)
+
+        return make_response(jsonify({'status': 'success', 'movie': f'{director} - {title}', 'list_number': list_number}), 200)
+    except Exception as e:
+        app.logger.error(f"Error moving movie to list number: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/swap-movies-in-watchlist', methods=['POST'])
+def swap_movies_in_watchlist() -> Response:
+    """
+    Route to swap two movies in the watchlist by their list numbers.
+
+    Expected JSON Input:
+        - list_number_1 (int): The list number of the first movie.
+        - list_number_2 (int): The list number of the second movie.
+
+    Returns:
+        JSON response indicating success or an error message.
+    """
+    try:
+        data = request.get_json()
+
+        list_number_1 = data.get('list_number_1')
+        list_number_2 = data.get('list_number_2')
+
+        app.logger.info(f"Swapping movies at list numbers {list_number_1} and {list_number_2}")
+
+        # Retrieve movies by list numbers and swap them
+        movie_1 = watchlist_model.get_movie_by_list_number(list_number_1)
+        movie_2 = watchlist_model.get_movie_by_list_number(list_number_2)
+        watchlist_model.swap_movies_in_watchlist(movie_1.id, movie_2.id)
+
+        return make_response(jsonify({
+            'status': 'success',
+            'swapped_movies': {
+                'list_1': {'id': movie_1.id, 'director': movie_1.director, 'title': movie_1.title},
+                'list_2': {'id': movie_2.id, 'director': movie_2.director, 'title': movie_2.title}
+            }
+        }), 200)
+    except Exception as e:
+        app.logger.error(f"Error swapping movies in watchlist: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
 ############################################################
 #
 # Leaderboard / Stats
 #
 ############################################################
+
+@app.route('/api/movie-leaderboard', methods=['GET'])
+def get_movie_leaderboard() -> Response:
+    """
+    Route to get a list of all sorted by watch count.
+
+    Returns:
+        JSON response with a sorted leaderboard of movies.
+    Raises:
+        500 error if there is an issue generating the leaderboard.
+    """
+    try:
+        app.logger.info("Generating movie leaderboard sorted")
+        leaderboard_data = movies_model.get_all_movies(sort_by_watch_count=True)
+        return make_response(jsonify({'status': 'success', 'leaderboard': leaderboard_data}), 200)
+    except Exception as e:
+        app.logger.error(f"Error generating leaderboard: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
 if __name__ == '__main__':
     port = os.getenv("PORT")
     app.run(debug=True, host='0.0.0.0', port=port)

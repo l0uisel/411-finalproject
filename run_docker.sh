@@ -2,7 +2,7 @@
 
 source .env
 # Variables
-IMAGE_NAME="playlist"
+IMAGE_NAME="watchlist"
 CONTAINER_TAG="0.0.1"
 HOST_PORT=$PORT
 CONTAINER_PORT=$PORT
