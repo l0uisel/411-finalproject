@@ -195,7 +195,7 @@ def get_movie_by_compound_key() -> Response:
         year = request.args.get('year')
 
         if not director or not title or not year:
-            return make_response(jsonify({'error': 'Missing required query parameters: artist, title, year'}), 400)
+            return make_response(jsonify({'error': 'Missing required query parameters: director, title, year'}), 400)
 
         # Attempt to cast year to an integer
         try:
@@ -203,7 +203,7 @@ def get_movie_by_compound_key() -> Response:
         except ValueError:
             return make_response(jsonify({'error': 'Year must be an integer'}), 400)
 
-        app.logger.info(f"Retrieving song by compound key: {director}, {title}, {year}")
+        app.logger.info(f"Retrieving movie by compound key: {director}, {title}, {year}")
         movie = movies_model.get_movie_by_compound_key(director, title, year)
         return make_response(jsonify({'status': 'success', 'movie': movie}), 200)
 
@@ -217,11 +217,125 @@ def get_movie_by_compound_key() -> Response:
 # Watchlist Management
 #
 ############################################################
-############################################################
-#
-# Play Watchlist
-#
-############################################################
+
+@app.route('/api/add-movie-to-watchlist', methods=['POST'])
+def add_movie_to_watchlist() -> Response:
+    """
+    Route to add a movie to the watchlist by compound key (director, title, year).
+
+    Expected JSON Input:
+        - director (str): The director's name.
+        - title (str): The movie title.
+        - year (int): The year the movie was released.
+
+    Returns:
+        JSON response indicating success of the addition or error message.
+    """
+    try:
+        data = request.get_json()
+
+        director = data.get('director')
+        title = data.get('title')
+        year = data.get('year')
+
+        if not director or not title or not year:
+            return make_response(jsonify({'error': 'Invalid input. Director, title, and year are required.'}), 400)
+
+        # Lookup the movie by compound key
+        movie = movies_model.get_movie_by_compound_key(director, title, year)
+
+        # Add movie to watchlist
+        watchlist_model.add_movie_to_watchlist(movie)
+
+        app.logger.info(f"movie added to watchlist: {director} - {title} ({year})")
+        return make_response(jsonify({'status': 'success', 'message': 'movie added to watchlist'}), 201)
+
+    except Exception as e:
+        app.logger.error(f"Error adding movie to watchlist: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/remove-movie-from-watchlist', methods=['DELETE'])
+def remove_movie_by_movie_id() -> Response:
+    """
+    Route to remove a movie from the watchlist by compound key (director, title, year).
+
+    Expected JSON Input:
+        - director (str): The director's name.
+        - title (str): The movie title.
+        - year (int): The year the movie was released.
+
+    Returns:
+        JSON response indicating success of the removal or error message.
+    """
+    try:
+        data = request.get_json()
+
+        director = data.get('director')
+        title = data.get('title')
+        year = data.get('year')
+
+        if not director or not title or not year:
+            return make_response(jsonify({'error': 'Invalid input. director, title, and year are required.'}), 400)
+
+        # Lookup the movie by compound key
+        movie = movies_model.get_movie_by_compound_key(director, title, year)
+
+        # Remove movie from watchlist
+        watchlist_model.remove_movie_by_movie_id(movie.id)
+
+        app.logger.info(f"movie removed from watchlist: {director} - {title} ({year})")
+        return make_response(jsonify({'status': 'success', 'message': 'movie removed from watchlist'}), 200)
+
+    except Exception as e:
+        app.logger.error(f"Error removing movie from watchlist: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/remove-movie-from-watchlist-by-list-number/<int:list_number>', methods=['DELETE'])
+def remove_movie_by_list_number(list_number: int) -> Response:
+    """
+    Route to remove a movie from the watchlist by list number.
+
+    Path Parameter:
+        - list_number (int): The list number of the movie to remove.
+
+    Returns:
+        JSON response indicating success of the removal or an error message.
+    """
+    try:
+        app.logger.info(f"Removing movie from watchlist by list number: {list_number}")
+
+        # Remove movie by list number
+        watchlist_model.remove_movie_by_list_number(list_number)
+
+        return make_response(jsonify({'status': 'success', 'message': f'movie at list number {list_number} removed from watchlist'}), 200)
+
+    except ValueError as e:
+        app.logger.error(f"Error removing movie by list number: {e}")
+        return make_response(jsonify({'error': str(e)}), 404)
+    except Exception as e:
+        app.logger.error(f"Error removing movie from watchlist: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/clear-watchlist', methods=['POST'])
+def clear_watchlist() -> Response:
+    """
+    Route to clear all movies from the watchlist.
+
+    Returns:
+        JSON response indicating success of the operation or an error message.
+    """
+    try:
+        app.logger.info('Clearing the watchlist')
+
+        # Clear the entire watchlist
+        watchlist_model.clear_watchlist()
+
+        return make_response(jsonify({'status': 'success', 'message': 'watchlist cleared'}), 200)
+
+    except Exception as e:
+        app.logger.error(f"Error clearing the watchlist: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
+
 ############################################################
 #
 # Arrange Watchlist
