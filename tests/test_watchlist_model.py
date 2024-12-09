@@ -10,11 +10,11 @@ def watchlist_model():
 """Fixtures providing sample movies for the tests."""
 @pytest.fixture
 def sample_movie1():
-    return Movie(1, 1, 'Director 1', 'Movie 1', 2022, 'Drama', 180)
+    return Movie(1, 1, 'Director 1', 'Movie 1', 'Drama', 2022, 180)
 
 @pytest.fixture
 def sample_movie2():
-    return Movie(2, 2, 'Director 2', 'Movie 2', 2021, 'Comedy', 155)
+    return Movie(2, 2, 'Director 2', 'Movie 2', 'Comedy', 2021, 155)
 
 @pytest.fixture
 def sample_watchlist(sample_movie1, sample_movie2):
@@ -125,7 +125,7 @@ def test_get_movie_by_list_number(watchlist_model, sample_watchlist):
     retrieved_movie = watchlist_model.get_movie_by_list_number(1)
     assert retrieved_movie.id == 1
     assert retrieved_movie.title == 'Movie 1'
-    assert retrieved_movie.artist == 'Director 1'
+    assert retrieved_movie.director == 'Director 1'
     assert retrieved_movie.year == 2022
     assert retrieved_movie.duration == 180
     assert retrieved_movie.genre == 'Drama'
@@ -147,7 +147,7 @@ def test_get_movie_by_movie_id(watchlist_model, sample_movie1):
 
     assert retrieved_movie.id == 1
     assert retrieved_movie.title == 'Movie 1'
-    assert retrieved_movie.artist == 'Director 1'
+    assert retrieved_movie.director == 'Director 1'
     assert retrieved_movie.year == 2022
     assert retrieved_movie.duration == 180
     assert retrieved_movie.genre == 'Drama'
@@ -159,7 +159,7 @@ def test_get_current_movie(watchlist_model, sample_watchlist):
     current_movie = watchlist_model.get_current_movie()
     assert current_movie.id == 1
     assert current_movie.title == 'Movie 1'
-    assert current_movie.artist == 'Director 1'
+    assert current_movie.director == 'Director 1'
     assert current_movie.year == 2022
     assert current_movie.duration == 180
     assert current_movie.genre == 'Drama'
