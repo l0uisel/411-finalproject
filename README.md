@@ -213,9 +213,8 @@ Success Response Example:
   }
 ```
   Example Request:
-```javascript
-  DELETE /api/delete-movie/
-```
+
+  `DELETE /api/delete-movie/`
 
   Example Response:
 ```json
@@ -275,9 +274,7 @@ Success Response Example:
 ```
   Example Request:
 
-```javascript
-  GET /api/get-all-movies-from-catalog?sort_by_watch_count=true
-```
+  `GET /api/get-all-movies-from-catalog?sort_by_watch_count=true`
 
   Example Response:
 ```json
@@ -344,9 +341,8 @@ Success Response Example:
 ```
 
   Example Request:
-```javascript
-  GET /api/get-movie-from-catalog-by-id/1
-```
+
+  `GET /api/get-movie-from-catalog-by-id/1`
 
   Example Response:
  ```json 
@@ -411,9 +407,8 @@ Content:
   }
 ```
   Example Request:
-```javascript
-  GET /api/get-movie-from-catalog-by-compound-key?director=Christopher%20Nolan&title=Inception&year=2010
-```
+
+  `GET /api/get-movie-from-catalog-by-compound-key?director=Christopher%20Nolan&title=Inception&year=2010`
 
   Example Response:
 ```json
@@ -503,8 +498,8 @@ Success Response Example:
 Error Response Example:
 ```json
   {
-    "error": "Error removing movie by list number”
-    "error": "Error removing movie from watchlist”
+    "error": "Error removing movie by list number",
+    "error": "Error removing movie from watchlist"
   }
 ```
 
@@ -529,7 +524,7 @@ Error Response Example:
 ```json
   {
   
-    "error": "Error clearing the watchlist”
+    "error": "Error clearing the watchlist"
   
   }
 ```
@@ -546,8 +541,8 @@ Success Response Example:
 ```json
   {
   
-    "status": "success"
-    "movies": Inception, Barbie, The Holdovers, Fantastic Mr. Fox, Scott   Pilgrim vs. the World 
+    "status": "success",
+    "movies": "Inception, Barbie, The Holdovers, Fantastic Mr. Fox, Scott   Pilgrim vs. the World"
     
   }
 ```
@@ -556,7 +551,7 @@ Error Response Example:
 ```json
   {
   
-    "error": "Error retrieving the movies from watchlist”
+    "error": "Error retrieving the movies from watchlist"
   
   }
 ```
@@ -573,18 +568,24 @@ Success Response Example:
 ```json
   {
   
-    "status": "success"
-    "movie": Scott Pilgrim vs. the World
+    "status": "success",
+    "movie": "Scott Pilgrim vs. the World"
  
   }
 ```
   
-Error Response Example:
+Error Response Examples:
 ```json
   {
   
-   "error": "Error retrieving movie by list number”
-   "error”: “Error retrieving movie from watchlist”
+   "error": "Error retrieving movie by list number"
+
+  }
+```
+```json
+  {
+  
+   "error": "Error retrieving movie from watchlist"
 
   }
 ```
@@ -601,8 +602,8 @@ Success Response Example:
 ```json
   {
   
-  "status": "success"
-  "watchlist_length": 10
+  "status": "success",
+  "watchlist_length": 10,
   "watchlist_duration": 1080
 
   }
@@ -613,8 +614,12 @@ Error Response Example:
   {
   
   "error": "Error retrieving watchlist length and duration"
-  "error": “Error retrieving movie from watchlist”
   
+  }
+```
+```json
+  {
+    "error": "Error retrieving movie from watchlist"
   }
 ```
 
@@ -630,7 +635,7 @@ Success Response Example:
 ```json
   {
   
-  "status": "success"
+  "status": "success",
   "list_number": 3
 
   }
@@ -640,7 +645,7 @@ Error Response Example:
 ```json
   {
   
-  "error": "Error going to list number 3”
+  "error": "Error going to list number 3"
 
   }
 ```
@@ -905,9 +910,8 @@ Error Response Example:
           ```
 
 - Example Request:
-  ```javascript
-  GET /api/movie-leaderboard
-  ```
+
+  `GET /api/movie-leaderboard`
 
 - Example Response:
   ```json
@@ -992,7 +996,7 @@ Error Response Example:
  ```json 
   {
   
-	"status": "success", "username": username 
+	"status": "success", "username": "<username>"
   
   }
 ```
@@ -1034,7 +1038,7 @@ Error Response Example:
 ```json
   {
   
-	"status": "success", "username": username 
+	"status": "success", "username": "<username>" 
   
   }
 ``` 
