@@ -104,6 +104,8 @@ Success Response Example:
   
   }
 
+#### Watchlist Management Routes
+
 **Route: /api/add-movie-to-watchlist'**
 
 Request Type: POST
@@ -122,7 +124,7 @@ Success Response Example:
 Error Response Example:
   {
   
-  "error": "Error adding movie to watchlist"
+    "error": "Error adding movie to watchlist"
   
   }
 
