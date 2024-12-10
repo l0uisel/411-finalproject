@@ -105,7 +105,335 @@ Error Response Example:
     
   }
 
+#### Movie Management Routes
+**Route: /api/create-movie**
 
+  Request Type: POST
+  
+  Purpose: Add a new movie to the catalog.
+  
+  Request Body:
+  
+  title (String): The title of the movie.
+  
+  Response Format: JSON
+  
+  Success Response Example:
+  
+  Code: 201
+  
+  Content:
+  
+  {
+  
+    "status": "success",
+    "movie": "Inception"
+  
+  }
+  
+  Error Response Example:
+  
+  Code: 500
+  
+  Content:
+
+  {
+  
+    "error": "Invalid input, all fields are required with valid values"
+    
+  }
+
+  Example Request:
+  {
+  
+    "title": "Inception"
+    
+  }
+
+  Example Response:
+  {
+  
+    "status": "success",
+    "movie": "Inception"
+  
+  }
+
+**Route: /api/clear-catalog**
+
+  Request Type: DELETE
+  
+  Purpose: Clear the entire movies catalog by recreating the table.
+  
+  Response Format: JSON
+  
+  Success Response Example:
+  
+  Code: 200
+
+  Content:
+  
+  {
+  
+    "status": "success"
+    
+  }
+
+  Error Response Example:
+  
+  Code: 500
+  
+  Content:
+  
+  {
+  
+    "error": "Database error while clearing the catalog"
+    
+  }
+
+**Route: /api/delete-movie/<movie_id>**
+
+  Request Type: DELETE
+  
+  Purpose: Delete a movie by its ID (soft delete).
+  
+  Path Parameters:
+  
+  movie_id (Integer): The ID of the movie to delete.
+  
+  Response Format: JSON
+  
+  Success Response Example:
+  
+  Code: 200
+  
+  Content:
+
+  {
+  
+    "status": "success"
+    
+  }
+
+  Error Response Example:
+  
+  Code: 500
+  
+  Content:
+  
+  {
+  
+    "error": "Database error while deleting the movie"
+    
+  }
+
+  Example Request:
+  DELETE /api/delete-movie/1
+
+  Example Response:
+  {
+  
+    "status": "success"
+  
+  }
+
+**Route: /api/get-all-movies-from-catalog**
+
+  Request Type: GET
+  
+  Purpose: Retrieve all non-deleted movies in the catalog.
+  
+  Query Parameters:
+  
+  sort_by_watch_count (Boolean, optional): If true, sort movies by watch count.
+  
+  Response Format: JSON
+  
+  Success Response Example:
+  
+  Code: 200
+  
+  Content:
+
+  {
+  
+    "status": "success",
+    "movies": [
+      {
+        "id": 1,
+        "title": "Inception",
+        "director": "Christopher Nolan",
+        "genre": "Sci-Fi",
+        "year": 2010,
+        "duration": 148,
+        "watch_count": 3
+      }
+    ]
+
+  }
+
+  Error Response Example:
+  
+  Code: 500
+  
+  Content:
+
+  {
+  
+    "error": "Database error while retrieving movies"
+    
+  }
+
+  Example Request:
+  
+  GET /api/get-all-movies-from-catalog?sort_by_watch_count=true
+
+  Example Response:
+
+  {
+  
+    "status": "success",
+    "movies": [
+      {
+        "id": 1,
+        "title": "Inception",
+        "director": "Christopher Nolan",
+        "genre": "Sci-Fi",
+        "year": 2010,
+        "duration": 148,
+        "watch_count": 3
+      }
+    ]
+  
+  }
+  
+**Route: /api/get-movie-from-catalog-by-id/<movie_id>**
+
+  Request Type: GET
+  
+  Purpose: Retrieve a movie by its ID.
+  
+  Path Parameters:
+  
+  movie_id (Integer): The ID of the movie.
+  
+  Response Format: JSON
+  
+  Success Response Example:
+  
+  Code: 200
+
+  Content:
+
+  {
+  
+    "status": "success",
+    "movie": {
+      "id": 1,
+      "title": "Inception",
+      "director": "Christopher Nolan",
+      "genre": "Sci-Fi",
+      "year": 2010,
+      "duration": 148
+    }
+  
+  }
+
+  Error Response Example:
+  
+  Code: 500
+  
+  Content:
+  {
+  
+    "error": "Database error while retrieving movie by ID"
+  
+  }
+
+  Example Request:
+  
+  GET /api/get-movie-from-catalog-by-id/1
+
+  Example Response:
+  
+  {
+  
+    "status": "success",
+    "movie": {
+      "id": 1,
+      "title": "Inception",
+      "director": "Christopher Nolan",
+      "genre": "Sci-Fi",
+      "year": 2010,
+      "duration": 148
+    }
+  
+  }
+
+**Route: /api/get-movie-from-catalog-by-compound-key**
+
+  Request Type: GET
+  
+  Purpose: Retrieve a movie by its compound key (director, title, year).
+  
+  Query Parameters:
+  
+  director (String): The director's name.
+  
+  title (String): The movie title.
+  
+  year (Integer): The year the movie was released.
+  
+  Response Format: JSON
+  
+  Success Response Example:
+  
+  Code: 200
+
+  Content:
+  
+  {
+  
+    "status": "success",
+    "movie": {
+      "id": 1,
+      "title": "Inception",
+      "director": "Christopher Nolan",
+      "genre": "Sci-Fi",
+      "year": 2010,
+      "duration": 148
+    }
+  
+  }
+  
+Error Response Example:
+
+Code: 500
+
+Content:
+
+  {
+    "error": "Invalid input, missing required query parameters"
+  }
+
+  Example Request:
+  
+  GET /api/get-movie-from-catalog-by-compound-key?director=Christopher%20Nolan&title=Inception&year=2010
+
+  Example Response:
+  {
+  
+    "status": "success",
+    "movie": {
+      "id": 1,
+      "title": "Inception",
+      "director": "Christopher Nolan",
+      "genre": "Sci-Fi",
+      "year": 2010,
+      "duration": 148
+    }
+ 
+  }
+  
 #### Watchlist Management Routes
 
 **Route: /api/add-movie-to-watchlist**
@@ -590,29 +918,32 @@ Error Response Example:
   Purpose: Validate a user's credentials.
   
   Request Body:
-  
-  {
-  
-    "username": "string",
-    "password": "string"
-  
-  }
+  username (String): The user's username.
+  password (String): The user's password.
   
   Response Format: JSON
   
   Success Response Example:
   
+  Code: 200
+  
+  Content:
+  
   {
   
-"message": "User account created successfully." 
+  	"status": "success", "username": username 
   
   }
   
   Error Response Example:
   
+  Code: 401
+  
+  Content:
+  
   {
   
-    "message": "Failed to create user account."
+  	"error": "Invalid credentials"
   
   }
   
@@ -624,28 +955,33 @@ Error Response Example:
   
   Request Body:
   
-  {
+  username (String): The user's username.
   
-    "username": "string",
-    "password": "string"
-  
-  }
+  password (String): The user's password.
   
   Response Format: JSON
   
   Success Response Example:
   
+  Code: 201
+  
+  Content:
+  
   {
   
-	"message": "User account created successfully."
+	"status": "success", "username": username 
   
   }
   
   Error Response Example:
   
+  Code: 400
+  
+  Content:
+  
   {
   
-	"message": "Failed to create user account."
+	"error": "Error creating account."
   
   }
   
@@ -656,31 +992,37 @@ Error Response Example:
   Purpose: Update a user's password.
   
   Request Body:
+
+  username (String): The user's username.
   
-  {
+  old_password (String): The user's current password.
   
-    "username": "string",
-    "old_password": "string",
-    "new_password": "string"
-  
-  }
+  new_password (String): The user's new password.
   
   Response Format: JSON
   
   Success Response Example:
   
+  Code: 200
+  
+  Content:
+  
   {
   
-"message": "Password updated successfully."
+	"status": "success", "username": username 
   
   }
   
   
   Error Response Example:
+
+  Code: 400
+  
+  Content:
   
   {
   
-    "message": "Failed to update password."
+    "error": "Error updating user password."
   
   }
   
