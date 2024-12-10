@@ -29,6 +29,8 @@
 ## Routing Documentation (app.py)
 ### Health Check Routes
 
+---
+
 **Route: `/api/health`**
 
   Request Type: `GET`
@@ -48,6 +50,8 @@
         "status": "healthy"
 }
 ```
+
+---
   
 **Route: `/api/db-check`**
 
@@ -85,6 +89,8 @@ Success Response Example:
 ```
 
 ### Movie Management Routes
+
+---
 
 **Route: `/api/create-movie`**
 
@@ -141,6 +147,8 @@ Success Response Example:
   }
 ```
 
+---
+
 **Route: `/api/clear-catalog`**
 
   Request Type: `DELETE`
@@ -174,6 +182,8 @@ Success Response Example:
     
   }
 ```
+
+---
 
 **Route: `/api/delete-movie/<movie_id>`**
 
@@ -224,6 +234,8 @@ Success Response Example:
   
   }
 ```
+
+---
 
 **Route: `/api/get-all-movies-from-catalog`**
 
@@ -295,6 +307,9 @@ Success Response Example:
   
   }
 ``` 
+
+---
+
 **Route: `/api/get-movie-from-catalog-by-id/<movie_id>`**
 
   Request Type: `GET`
@@ -360,6 +375,9 @@ Success Response Example:
   
   }
 ```
+
+---
+
 **Route: `/api/get-movie-from-catalog-by-compound-key`**
 
   Request Type: `GET`
@@ -428,6 +446,8 @@ Content:
 ``` 
 ### Watchlist Management Routes
 
+---
+
 **Route: `/api/add-movie-to-watchlist`**
 
 Request Type: `POST`
@@ -453,6 +473,9 @@ Error Response Example:
   
   }
 ```
+
+---
+
 **Route: `/api/remove-movie-from-watchlist`**
 
 Request Type: `DELETE`
@@ -479,6 +502,8 @@ Error Response Example:
   }
 ```
 
+---
+
 **Route: `/api/remove-movie-from-watchlist-by-list-number/<int:list_number>`**
 
 Request Type: `DELETE`
@@ -502,6 +527,8 @@ Error Response Example:
     "error": "Error removing movie from watchlist"
   }
 ```
+
+---
 
 **Route: `/api/clear-watchlist`**
 
@@ -529,6 +556,8 @@ Error Response Example:
   }
 ```
 
+---
+
 **Route: `/api/get-all-movies-from-watchlist`**
 
 Request Type:`GET`
@@ -555,6 +584,8 @@ Error Response Example:
   
   }
 ```
+
+---
 
 **Route: `/api/get-movie-from-watchlist-by-list-number/<int:list_number>`**
 
@@ -590,6 +621,8 @@ Error Response Examples:
   }
 ```
 
+---
+
 **Route: `/api/get-watchlist-length-duration`**
 
 Request Type:`GET`
@@ -623,6 +656,8 @@ Error Response Example:
   }
 ```
 
+---
+
 **Route: `/api/go-to-list-number/<int:list_number>`**
 
 Request Type:`POST`
@@ -652,6 +687,9 @@ Error Response Example:
 
 
 ### Arrange Watchlist Routes
+
+---
+
 **Route: `/api/move-movie-to-beginning`**
 
 - Request Type:`POST`
@@ -699,6 +737,8 @@ Error Response Example:
         "movie": "Inception"
     }
 ```
+
+---
 
 **Route: `/api/move-movie-to-end`**
 
@@ -935,6 +975,9 @@ Error Response Example:
   ```
 
 ### User Routes
+
+---
+
 **Route: `/api/login`**
 
   Request Type:`POST`
@@ -973,6 +1016,8 @@ Error Response Example:
   
   }
 ```
+
+---
   
 **Route: `/api/create-account`**
   
@@ -1013,6 +1058,8 @@ Error Response Example:
   
   }
 ```
+
+---
   
 **Route: `/api/update-password`**
   
