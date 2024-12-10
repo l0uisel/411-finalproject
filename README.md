@@ -106,7 +106,7 @@ Success Response Example:
 
 #### Watchlist Management Routes
 
-**Route: /api/add-movie-to-watchlist'**
+**Route: /api/add-movie-to-watchlist**
 
 Request Type: POST
 
@@ -127,6 +127,29 @@ Error Response Example:
     "error": "Error adding movie to watchlist"
   
   }
+
+**Route: /api/remove-movie-from-watchlist**
+
+Request Type: DELETE
+
+Purpose:  Removes a movie from the watchlist by compound key
+
+Response Format: JSON
+
+Success Response Example:
+  {
+  
+    "status": "success, movie removed from watchlist"
+    
+  }
+  
+Error Response Example:
+  {
+  
+    "error": "Error removing movie from watchlist"
+  
+  }
+
 
 
 
