@@ -582,7 +582,7 @@ Error Response Example:
 
 }
 
-#### User
+#### User Routes
 **Route: /api/login**
 
   Request Type: POST
@@ -604,8 +604,7 @@ Error Response Example:
   
   {
   
-    "status": "success",
-    "username": "newuser1"
+"message": "User account created successfully." 
   
   }
   
@@ -613,7 +612,7 @@ Error Response Example:
   
   {
   
-    "error": "Invalid credentials"
+    "message": "Failed to create user account."
   
   }
   
@@ -638,8 +637,7 @@ Error Response Example:
   
   {
   
-    "status": "success",
-    "username": "newuser1"
+	"message": "User account created successfully."
   
   }
   
@@ -647,7 +645,7 @@ Error Response Example:
   
   {
   
-   "error": "Username already exists"
+	"message": "Failed to create user account."
   
   }
   
@@ -673,8 +671,7 @@ Error Response Example:
   
   {
   
-    "status": "success",
-    "username": "newuser1"
+"message": "Password updated successfully."
   
   }
   
@@ -683,11 +680,9 @@ Error Response Example:
   
   {
   
-    "error": "Invalid credentials"
+    "message": "Failed to update password."
   
   }
-  
-  
   
 - **A description of each route (example on ed discussion):**
   - **Route Name and Path**
