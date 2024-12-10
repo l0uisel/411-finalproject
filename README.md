@@ -134,7 +134,7 @@ Error Response Example:
 
 Request Type: DELETE
 
-Purpose:  Removes a movie from the watchlist by compound key
+Purpose: Removes a movie from the watchlist by compound key
 
 Response Format: JSON
 
@@ -152,6 +152,145 @@ Error Response Example:
   
   }
 
+**Route: /api/remove-movie-from-watchlist-by-list-number/<int:list_number>**
+
+Request Type: DELETE
+
+Purpose: Removes a movie from the watchlist by list number
+
+Response Format: JSON
+
+Success Response Example:
+  {
+  
+    "status": "success, movie at list number 5 removed from watchlist"
+    
+  }
+  
+Error Response Example:
+  {
+  
+    "error": "Error removing movie by list number”
+    "error": “Error removing movie from watchlist”
+  
+  }
+
+**Route: /api/clear-watchlist**
+
+Request Type: POST
+
+Purpose: Clears all movies from the watchlist
+
+Response Format: JSON
+
+Success Response Example:
+  {
+  
+    "status": "success, watchlist cleared"
+    
+  }
+  
+Error Response Example:
+  {
+  
+    "error": "Error clearing the watchlist”
+  
+  }
+
+**Route: /api/get-all-movies-from-watchlist**
+
+Request Type: GET
+
+Purpose: Retrieves all movies in the watchlist
+
+Response Format: JSON
+
+Success Response Example:
+  {
+  
+    "status": "success"
+    "movies": Inception, Barbie, The Holdovers, Fantastic Mr. Fox, Scott   Pilgrim vs. the World 
+    
+  }
+  
+Error Response Example:
+  {
+  
+    "error": "Error retrieving the movies from watchlist”
+  
+  }
+
+**Route: /api/get-movie-from-watchlist-by-list-number/<int:list_number>**
+
+Request Type: GET
+
+Purpose: Retrieves a movie form the watchlist by its list number
+
+Response Format: JSON
+
+Success Response Example:
+  {
+  
+    "status": "success"
+    "movie": Scott Pilgrim vs. the World
+ 
+  }
+  
+Error Response Example:
+  {
+  
+   "error": "Error retrieving movie by list number”
+   "error”: “Error retrieving movie from watchlist”
+
+  }
+
+**Route:/api/get-watchlist-length-duration**
+
+Request Type: GET
+
+Purpose: Retrieves both total number of movies in list and total duration of the watchlist
+
+Response Format: JSON
+
+Success Response Example:
+  {
+  
+  "status": "success"
+  "watchlist_length": 10
+  "watchlist_duration": 1080
+
+  }
+  
+Error Response Example:
+  {
+  
+  "error": "Error retrieving watchlist length and duration”
+  "error": “Error retrieving movie from watchlist”
+  
+  }
+
+**Route:/api/go-to-list-number/<int:list_number>**
+
+Request Type: POST
+
+Purpose: Sets the watchlist to start playing from a specific list number
+
+Response Format: JSON
+
+Success Response Example:
+  {
+  
+  "status": "success"
+  "list_number": 3
+
+  }
+  
+Error Response Example:
+  {
+  
+  "error": "Error going to list number 3”
+
+  }
 
 
 #### Arrange Watchlist Routes
