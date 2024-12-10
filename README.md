@@ -213,7 +213,7 @@ Success Response Example:
   }
 ```
   Example Request:
-```http
+```javascript
   DELETE /api/delete-movie/
 ```
 
@@ -275,7 +275,7 @@ Success Response Example:
 ```
   Example Request:
 
-```http
+```javascript
   GET /api/get-all-movies-from-catalog?sort_by_watch_count=true
 ```
 
@@ -344,7 +344,7 @@ Success Response Example:
 ```
 
   Example Request:
-```http
+```javascript
   GET /api/get-movie-from-catalog-by-id/1
 ```
 
@@ -411,7 +411,7 @@ Content:
   }
 ```
   Example Request:
-```http
+```javascript
   GET /api/get-movie-from-catalog-by-compound-key?director=Christopher%20Nolan&title=Inception&year=2010
 ```
 
@@ -905,7 +905,7 @@ Error Response Example:
           ```
 
 - Example Request:
-  ```http
+  ```javascript
   GET /api/movie-leaderboard
   ```
 
