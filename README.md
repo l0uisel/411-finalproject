@@ -19,6 +19,7 @@
 
   To join our app, users can create an account. We also check for username uniqueness, if the account already exists and allow users to update their password. Users can log in when they have an existing account with the right password.
 
+###Routing Documentation (app.py)
 ## Health Check Routes
 
 ### **Route: `/api/health`**
@@ -338,9 +339,136 @@
   }
   ```
 
+<<<<<<< HEAD
 - **Error Response Example**:
   ```json
   {
       "error": "Error generating leaderboard"
   }
   ```
+=======
+    "status": "success"
+
+}
+
+#### User
+**Route: /api/login**
+
+  Request Type: POST
+  
+  Purpose: Validate a user's credentials.
+  
+  Request Body:
+  
+  {
+  
+    "username": "string",
+    "password": "string"
+  
+  }
+  
+  Response Format: JSON
+  
+  Success Response Example:
+  
+  {
+  
+    "status": "success",
+    "username": "newuser1"
+  
+  }
+  
+  Error Response Example:
+  
+  {
+  
+    "error": "Invalid credentials"
+  
+  }
+  
+**Route: /api/create-account**
+  
+  Request Type: POST
+  
+  Purpose: Create a new user account.
+  
+  Request Body:
+  
+  {
+  
+    "username": "string",
+    "password": "string"
+  
+  }
+  
+  Response Format: JSON
+  
+  Success Response Example:
+  
+  {
+  
+    "status": "success",
+    "username": "newuser1"
+  
+  }
+  
+  Error Response Example:
+  
+  {
+  
+   "error": "Username already exists"
+  
+  }
+  
+**Route: /api/update-password**
+  
+  Request Type: POST
+  
+  Purpose: Update a user's password.
+  
+  Request Body:
+  
+  {
+  
+    "username": "string",
+    "old_password": "string",
+    "new_password": "string"
+  
+  }
+  
+  Response Format: JSON
+  
+  Success Response Example:
+  
+  {
+  
+    "status": "success",
+    "username": "newuser1"
+  
+  }
+  
+  
+  Error Response Example:
+  
+  {
+  
+    "error": "Invalid credentials"
+  
+  }
+  
+  
+  
+- **A description of each route (example on ed discussion):**
+  - **Route Name and Path**
+  - **Request Type**
+    - GET, POST, PUT, DELETE
+  - **Purpose**
+  - **Request Format**
+    - GET parameters
+    - POST / PUT / DELETE body
+  - **Response Format**
+    - JSON keys and value types
+  - **Example**
+    - Request in the form of JSON body or cURL command
+    - Associated JSON response
+>>>>>>> 55fc466da783cbd6e1b5c3165bb942eeddd70fd2
