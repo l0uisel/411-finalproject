@@ -90,19 +90,304 @@ Error Response Example:
 
 **Route: /api/clear-catalog**
 
-Request Type: DELETE
+  Request Type: DELETE
 
-Purpose: Clear the entire movie catalog.
+  Purpose: Clear the entire movie catalog.
 
-Response Format: JSON
+  Response Format: JSON
 
-Success Response Example:
+  Success Response Example:
 
-{
+  {
 
-  "status": "success"
-  
-}
+    "status": "success"
+    
+  }
+
+
+**Route: /api/move-movie-to-beginning**
+
+  - Request Type: POST
+
+  - Purpose: move a movie to the beginning of the watchlist.
+
+  - Request Body:
+    - director (String): The director of the movie.
+    - title(String): The title of the movie.
+    - year(Integer): The year the movie was released.
+  - Response Format: JSON
+    - Success Response Example:
+      - code: 200
+      - content:
+```json   
+      {
+
+        "status": "success",
+        "movie": "Inception"
+     
+      }
+```
+  - Error Response Example:
+    - code: 500
+    - content:
+```json   
+        {
+
+          "error": "Invalid input, all fields are required with valid values"
+
+        }
+```
+  - Example Request:
+```json   
+    {
+        "director": "Christopher Nolan",
+        "title": "Inception",
+        "year": 2010
+    }
+```
+  - Example Response:
+```json   
+    {
+        "status": "success",
+        "movie": "Inception"
+    }
+```
+
+**Route: /api/move-movie-to-end**
+
+  - Request Type: POST
+
+  - Purpose: Move a movie to the end of the watchlist.
+
+  - Request Body:
+    - director (String): The director of the movie.
+    - title (String): The title of the movie.
+    - year (Integer): The year the movie was released.
+
+  - Response Format: JSON
+    - Success Response Example:
+      - code: 200
+      - content:
+        ```json
+        {
+            "status": "success",
+            "movie": "Inception"
+        }
+        ```
+    - Error Response Example:
+      - code: 500
+      - content:
+        ```json
+        {
+            "error": "Invalid input, all fields are required with valid values"
+        }
+        ```
+
+  - Example Request:
+    ```json
+    {
+        "director": "Christopher Nolan",
+        "title": "Inception",
+        "year": 2010
+    }
+    ```
+
+  - Example Response:
+    ```json
+    {
+        "status": "success",
+        "movie": "Inception"
+    }
+    ```
+
+---
+
+**Route: /api/move-movie-to-list-number**
+
+  - Request Type: POST
+
+  - Purpose: Move a movie to a specific list number in the watchlist.
+
+  - Request Body:
+    - director (String): The director of the movie.
+    - title (String): The title of the movie.
+    - year (Integer): The year the movie was released.
+    - list_number (Integer): The new list number to move the movie to.
+
+  - Response Format: JSON
+    - Success Response Example:
+      - code: 200
+      - content:
+        ```json
+        {
+            "status": "success",
+            "movie": "Inception",
+            "list_number": 2
+        }
+        ```
+    - Error Response Example:
+      - code: 500
+      - content:
+        ```json
+        {
+            "error": "Invalid input, all fields are required with valid values"
+        }
+        ```
+
+  - Example Request:
+    ```json
+    {
+        "director": "Christopher Nolan",
+        "title": "Inception",
+        "year": 2010,
+        "list_number": 2
+    }
+    ```
+
+  - Example Response:
+    ```json
+    {
+        "status": "success",
+        "movie": "Inception",
+        "list_number": 2
+    }
+    ```
+
+---
+
+**Route: /api/swap-movies-in-watchlist**
+
+  - Request Type: POST
+
+  - Purpose: Swap two movies in the watchlist by their list numbers.
+
+  - Request Body:
+    - list_number_1 (Integer): The list number of the first movie.
+    - list_number_2 (Integer): The list number of the second movie.
+
+  - Response Format: JSON
+    - Success Response Example:
+      - code: 200
+      - content:
+        ```json
+        {
+            "status": "success",
+            "swapped_movies": {
+                "list_1": {
+                    "id": 1,
+                    "director": "Christopher Nolan",
+                    "title": "Inception"
+                },
+                "list_2": {
+                    "id": 2,
+                    "director": "Quentin Tarantino",
+                    "title": "Pulp Fiction"
+                }
+            }
+        }
+        ```
+    - Error Response Example:
+      - code: 500
+      - content:
+        ```json
+        {
+            "error": "Invalid list numbers or movies not found"
+        }
+        ```
+
+  - Example Request:
+    ```json
+    {
+        "list_number_1": 1,
+        "list_number_2": 2
+    }
+    ```
+
+  - Example Response:
+    ```json
+    {
+        "status": "success",
+        "swapped_movies": {
+            "list_1": {
+                "id": 1,
+                "director": "Christopher Nolan",
+                "title": "Inception"
+            },
+            "list_2": {
+                "id": 2,
+                "director": "Quentin Tarantino",
+                "title": "Pulp Fiction"
+            }
+        }
+    }
+    ```
+
+---
+
+**Route: /api/movie-leaderboard**
+
+  - Request Type: GET
+
+  - Purpose: Get a list of all movies sorted by watch count.
+
+  - Response Format: JSON
+    - Success Response Example:
+      - code: 200
+      - content:
+        ```json
+        {
+            "status": "success",
+            "leaderboard": [
+                {
+                    "id": 1,
+                    "director": "Christopher Nolan",
+                    "title": "Inception",
+                    "watch_count": 42
+                },
+                {
+                    "id": 2,
+                    "director": "Steven Spielberg",
+                    "title": "Jurassic Park",
+                    "watch_count": 35
+                }
+            ]
+        }
+        ```
+    - Error Response Example:
+      - code: 500
+      - content:
+        ```json
+        {
+            "error": "Error generating leaderboard"
+        }
+        ```
+
+  - Example Request:
+    ```http
+    GET /api/movie-leaderboard
+    ```
+
+  - Example Response:
+    ```json
+    {
+        "status": "success",
+        "leaderboard": [
+            {
+                "id": 1,
+                "director": "Christopher Nolan",
+                "title": "Inception",
+                "watch_count": 42
+            },
+            {
+                "id": 2,
+                "director": "Steven Spielberg",
+                "title": "Jurassic Park",
+                "watch_count": 35
+            }
+        ]
+    }
+    ```
+
 - **A description of each route (example on ed discussion):**
   - **Route Name and Path**
   - **Request Type**
