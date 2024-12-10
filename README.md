@@ -38,6 +38,11 @@
   Response Format: `JSON`
   
   Example Response:
+
+  Code: `200`
+
+  Content:
+
 ```json
 {
         "status": "healthy"
@@ -53,6 +58,10 @@ Purpose: Verify the database connection and ensure the required tables exist.
 Response Format: `JSON`
 
 Success Response Example:
+  Code: `200`
+
+  Content:
+
 ```json
   {
   
@@ -62,6 +71,11 @@ Success Response Example:
 ```            
   
   Error Response Example:
+
+  Code: `404`
+
+  Content:
+  
 ```json
   {
   
