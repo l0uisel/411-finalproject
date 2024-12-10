@@ -37,18 +37,18 @@
   
 **Route: /api/db-check**
 
-Request Type: GET
+  Request Type: GET
 
-Purpose: Verify the database connection and ensure the required tables exist.
+  Purpose: Verify the database connection and ensure the required tables exist.
 
-Response Format: JSON
+  Response Format: JSON
 
-Success Response Example:
-{
+  Success Response Example:
+  {
 
-  "database_status": "healthy"
-  
-}
+    "database_status": "healthy"
+    
+  }
 
 Error Response Example:
 {
@@ -59,34 +59,34 @@ Error Response Example:
 
 **Route: /api/create-movie**
 
-Request Type: POST
+  Request Type: POST
 
-Purpose: Add a new movie to the catalog.
+  Purpose: Add a new movie to the catalog.
 
-Request Body:
+  Request Body:
 
-{
-  "title": "string"
-}
+  {
+    "title": "string"
+  }
 
-Response Format: JSON
+  Response Format: JSON
 
-Success Response Example:
+  Success Response Example:
 
-{
+  {
 
-  "status": "success",
-  "movie": "Inception"
-  
-}
+    "status": "success",
+    "movie": "Inception"
+    
+  }
 
-Error Response Example:
+  Error Response Example:
 
-{
+  {
 
-  "error": "Invalid input, all fields are required with valid values"
+    "error": "Invalid input, all fields are required with valid values"
 
-}
+  }
 
 **Route: /api/clear-catalog**
 
