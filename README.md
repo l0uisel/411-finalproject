@@ -918,29 +918,32 @@ Error Response Example:
   Purpose: Validate a user's credentials.
   
   Request Body:
-  
-  {
-  
-    "username": "string",
-    "password": "string"
-  
-  }
+  username (String): The user's username.
+  password (String): The user's password.
   
   Response Format: JSON
   
   Success Response Example:
   
+  Code: 200
+  
+  Content:
+  
   {
   
-"message": "User account created successfully." 
+  	"status": "success", "username": username 
   
   }
   
   Error Response Example:
   
+  Code: 401
+  
+  Content:
+  
   {
   
-    "message": "Failed to create user account."
+  	"error": "Invalid credentials"
   
   }
   
@@ -952,28 +955,33 @@ Error Response Example:
   
   Request Body:
   
-  {
+  username (String): The user's username.
   
-    "username": "string",
-    "password": "string"
-  
-  }
+  password (String): The user's password.
   
   Response Format: JSON
   
   Success Response Example:
   
+  Code: 201
+  
+  Content:
+  
   {
   
-	"message": "User account created successfully."
+	"status": "success", "username": username 
   
   }
   
   Error Response Example:
   
+  Code: 400
+  
+  Content:
+  
   {
   
-	"message": "Failed to create user account."
+	"error": "Error creating account."
   
   }
   
@@ -984,31 +992,37 @@ Error Response Example:
   Purpose: Update a user's password.
   
   Request Body:
+
+  username (String): The user's username.
   
-  {
+  old_password (String): The user's current password.
   
-    "username": "string",
-    "old_password": "string",
-    "new_password": "string"
-  
-  }
+  new_password (String): The user's new password.
   
   Response Format: JSON
   
   Success Response Example:
   
+  Code: 200
+  
+  Content:
+  
   {
   
-"message": "Password updated successfully."
+	"status": "success", "username": username 
   
   }
   
   
   Error Response Example:
+
+  Code: 400
+  
+  Content:
   
   {
   
-    "message": "Failed to update password."
+    "error": "Error updating user password."
   
   }
   
