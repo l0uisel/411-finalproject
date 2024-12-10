@@ -116,3 +116,10 @@ Success Response Example:
   - **Example**
     - Request in the form of JSON body or cURL command
     - Associated JSON response
+
+## Steps required to run the application:
+1. Create an API key for the omdbapi.com: https://www.omdbapi.com/
+2. Put it in the .env file like API_KEY=<your api key>
+3. Activate the virtual environment using setup_env.sh
+4. Run run_docker.sh
+5. Now the app is running on the port specified in the .env file. The default port is 800.
