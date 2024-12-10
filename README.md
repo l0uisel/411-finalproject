@@ -19,229 +19,65 @@
 
   To join our app, users can create an account. We also check for username uniqueness, if the account already exists and allow users to update their password. Users can log in when they have an existing account with the right password.
 
-#### Health Check Routes
-**Route: /api/health**
+## Health Check Routes
 
-  Request Type: GET
-  
-  Purpose: Verify if the service is running.
-  
-  Response Format: JSON
-  
-  Example Response:
-  {
-  
-    "status": "healthy"
-    
-  }
-  
-**Route: /api/db-check**
+### **Route: `/api/health`**
 
-Request Type: GET
+- **Request Type**: `GET`
+- **Purpose**: Verify if the service is running.
 
-Purpose: Verify the database connection and ensure the required tables exist.
+#### Response Format
 
-Response Format: JSON
-  
-  Success Response Example:
-  {
-  
-    "database_status": "healthy"
-  
-  }
-  
-  Error Response Example:
-  {
-  
-    "error": "movies table does not exist"
-  
-  }
-
-**Route: /api/create-movie**
-
-Request Type: POST
-
-Purpose: Add a new movie to the catalog.
-
-Request Body:
-
-  {
-    "title": "string"
-  }
-  
-  Response Format: JSON
-  
-  Success Response Example:
-  
-  {
-  
-    "status": "success",
-    "movie": "Inception"
-    
-  }
-
-Error Response Example:
-
-  {
-  
-    "error": "Invalid input, all fields are required with valid values"
-  
-  }
-
-**Route: /api/clear-catalog**
-
-  Request Type: DELETE
-
-  Purpose: Clear the entire movie catalog.
-
-  Response Format: JSON
-
-  Success Response Example:
-
-  {
-
-    "status": "success"
-    
-  }
-
-
-#### Watchlist Management Routes
-
-**Route: /api/add-movie-to-watchlist**
-
-Request Type: POST
-
-Purpose: Adds a new movie to the watchlist by compound key
-
-Response Format: JSON
-
-Success Response Example:
-  {
-  
-    "status": "success, movie added to watchlist"
-    
-  }
-  
-Error Response Example:
-  {
-  
-    "error": "Error adding movie to watchlist"
-  
-  }
-
-**Route: /api/remove-movie-from-watchlist**
-
-Request Type: DELETE
-
-Purpose:  Removes a movie from the watchlist by compound key
-
-Response Format: JSON
-
-Success Response Example:
-  {
-  
-    "status": "success, movie removed from watchlist"
-    
-  }
-  
-Error Response Example:
-  {
-  
-    "error": "Error removing movie from watchlist"
-  
-  }
-
-
-
-#### Arrange Watchlist Routes
-**Route: /api/move-movie-to-beginning**
-
-- Request Type: POST
-
-- Purpose: move a movie to the beginning of the watchlist.
-
-- Request Body:
-    - director (String): The director of the movie.
-    - title(String): The title of the movie.
-    - year(Integer): The year the movie was released.
-- Response Format: JSON
-    - Success Response Example:
-        - code: 200
-        - content:
-```json   
-      {
-
-        "status": "success",
-        "movie": "Inception"
-     
-      }
-```
-- Error Response Example:
-    - code: 500
-    - content:
-```json   
-        {
-
-          "error": "Invalid input, all fields are required with valid values"
-
-        }
-```
-- Example Request:
-```json   
-    {
-        "director": "Christopher Nolan",
-        "title": "Inception",
-        "year": 2010
-    }
-```
-- Example Response:
-```json   
-    {
-        "status": "success",
-        "movie": "Inception"
-    }
-```
-
-**Route: /api/move-movie-to-end**
-
-- Request Type: POST
-
-- Purpose: Move a movie to the end of the watchlist.
-
-- Request Body:
-    - director (String): The director of the movie.
-    - title (String): The title of the movie.
-    - year (Integer): The year the movie was released.
-
-- Response Format: JSON
-    - Success Response Example:
-        - code: 200
-        - content:
-          ```json
-          {
-              "status": "success",
-              "movie": "Inception"
-          }
-          ```
-    - Error Response Example:
-        - code: 500
-        - content:
-          ```json
-          {
-              "error": "Invalid input, all fields are required with valid values"
-          }
-          ```
-
-- Example Request:
+- **Success Response Example**:
   ```json
   {
-      "director": "Christopher Nolan",
-      "title": "Inception",
-      "year": 2010
+      "status": "healthy"
   }
   ```
 
-- Example Response:
+---
+
+### **Route: `/api/db-check`**
+
+- **Request Type**: `GET`
+- **Purpose**: Verify the database connection and ensure the required tables exist.
+
+#### Response Format
+
+- **Success Response Example**:
+  ```json
+  {
+      "database_status": "healthy"
+  }
+  ```
+
+- **Error Response Example**:
+  ```json
+  {
+      "error": "movies table does not exist"
+  }
+  ```
+
+---
+
+## Movie Catalog Routes
+
+### **Route: `/api/create-movie`**
+
+- **Request Type**: `POST`
+- **Purpose**: Add a new movie to the catalog.
+
+#### Request Body
+
+```json
+{
+    "title": "Inception"
+}
+```
+
+#### Response Format
+
+- **Success Response Example**:
   ```json
   {
       "status": "success",
@@ -249,51 +85,168 @@ Error Response Example:
   }
   ```
 
----
-
-**Route: /api/move-movie-to-list-number**
-
-- Request Type: POST
-
-- Purpose: Move a movie to a specific list number in the watchlist.
-
-- Request Body:
-    - director (String): The director of the movie.
-    - title (String): The title of the movie.
-    - year (Integer): The year the movie was released.
-    - list_number (Integer): The new list number to move the movie to.
-
-- Response Format: JSON
-    - Success Response Example:
-        - code: 200
-        - content:
-          ```json
-          {
-              "status": "success",
-              "movie": "Inception",
-              "list_number": 2
-          }
-          ```
-    - Error Response Example:
-        - code: 500
-        - content:
-          ```json
-          {
-              "error": "Invalid input, all fields are required with valid values"
-          }
-          ```
-
-- Example Request:
+- **Error Response Example**:
   ```json
   {
-      "director": "Christopher Nolan",
-      "title": "Inception",
-      "year": 2010,
-      "list_number": 2
+      "error": "Invalid input, all fields are required with valid values"
   }
   ```
 
-- Example Response:
+---
+
+### **Route: `/api/clear-catalog`**
+
+- **Request Type**: `DELETE`
+- **Purpose**: Clear the entire movie catalog.
+
+#### Response Format
+
+- **Success Response Example**:
+  ```json
+  {
+      "status": "success"
+  }
+  ```
+
+---
+
+## Watchlist Management Routes
+
+### **Route: `/api/add-movie-to-watchlist`**
+
+- **Request Type**: `POST`
+- **Purpose**: Add a new movie to the watchlist by compound key.
+
+#### Response Format
+
+- **Success Response Example**:
+  ```json
+  {
+      "status": "success, movie added to watchlist"
+  }
+  ```
+
+- **Error Response Example**:
+  ```json
+  {
+      "error": "Error adding movie to watchlist"
+  }
+  ```
+
+---
+
+### **Route: `/api/remove-movie-from-watchlist`**
+
+- **Request Type**: `DELETE`
+- **Purpose**: Remove a movie from the watchlist by compound key.
+
+#### Response Format
+
+- **Success Response Example**:
+  ```json
+  {
+      "status": "success, movie removed from watchlist"
+  }
+  ```
+
+- **Error Response Example**:
+  ```json
+  {
+      "error": "Error removing movie from watchlist"
+  }
+  ```
+
+---
+
+## Arrange Watchlist Routes
+
+### **Route: `/api/move-movie-to-beginning`**
+
+- **Request Type**: `POST`
+- **Purpose**: Move a movie to the beginning of the watchlist.
+
+#### Request Body
+
+```json
+{
+    "director": "Christopher Nolan",
+    "title": "Inception",
+    "year": 2010
+}
+```
+
+#### Response Format
+
+- **Success Response Example**:
+  ```json
+  {
+      "status": "success",
+      "movie": "Inception"
+  }
+  ```
+
+- **Error Response Example**:
+  ```json
+  {
+      "error": "Invalid input, all fields are required with valid values"
+  }
+  ```
+
+---
+
+### **Route: `/api/move-movie-to-end`**
+
+- **Request Type**: `POST`
+- **Purpose**: Move a movie to the end of the watchlist.
+
+#### Request Body
+
+```json
+{
+    "director": "Christopher Nolan",
+    "title": "Inception",
+    "year": 2010
+}
+```
+
+#### Response Format
+
+- **Success Response Example**:
+  ```json
+  {
+      "status": "success",
+      "movie": "Inception"
+  }
+  ```
+
+- **Error Response Example**:
+  ```json
+  {
+      "error": "Invalid input, all fields are required with valid values"
+  }
+  ```
+
+---
+
+### **Route: `/api/move-movie-to-list-number`**
+
+- **Request Type**: `POST`
+- **Purpose**: Move a movie to a specific list number in the watchlist.
+
+#### Request Body
+
+```json
+{
+    "director": "Christopher Nolan",
+    "title": "Inception",
+    "year": 2010,
+    "list_number": 2
+}
+```
+
+#### Response Format
+
+- **Success Response Example**:
   ```json
   {
       "status": "success",
@@ -302,57 +255,32 @@ Error Response Example:
   }
   ```
 
----
-
-**Route: /api/swap-movies-in-watchlist**
-
-- Request Type: POST
-
-- Purpose: Swap two movies in the watchlist by their list numbers.
-
-- Request Body:
-    - list_number_1 (Integer): The list number of the first movie.
-    - list_number_2 (Integer): The list number of the second movie.
-
-- Response Format: JSON
-    - Success Response Example:
-        - code: 200
-        - content:
-          ```json
-          {
-              "status": "success",
-              "swapped_movies": {
-                  "list_1": {
-                      "id": 1,
-                      "director": "Christopher Nolan",
-                      "title": "Inception"
-                  },
-                  "list_2": {
-                      "id": 2,
-                      "director": "Quentin Tarantino",
-                      "title": "Pulp Fiction"
-                  }
-              }
-          }
-          ```
-    - Error Response Example:
-        - code: 500
-        - content:
-          ```json
-          {
-              "error": "Invalid list numbers or movies not found"
-          }
-          ```
-
-- Example Request:
+- **Error Response Example**:
   ```json
   {
-      "list_number_1": 1,
-      "list_number_2": 2
+      "error": "Invalid input, all fields are required with valid values"
   }
   ```
 
-- Example Response:
+---
+
+### **Route: `/api/swap-movies-in-watchlist`**
+
+- **Request Type**: `POST`
+- **Purpose**: Swap two movies in the watchlist by their list numbers.
+
+#### Request Body
+
+```json
+{
+    "list_number_1": 1,
+    "list_number_2": 2
+}
+```
+
+#### Response Format
+
+- **Success Response Example**:
   ```json
   {
       "status": "success",
@@ -371,52 +299,25 @@ Error Response Example:
   }
   ```
 
----
-
-**Route: /api/movie-leaderboard**
-
-- Request Type: GET
-
-- Purpose: Get a list of all movies sorted by watch count.
-
-- Response Format: JSON
-    - Success Response Example:
-        - code: 200
-        - content:
-          ```json
-          {
-              "status": "success",
-              "leaderboard": [
-                  {
-                      "id": 1,
-                      "director": "Christopher Nolan",
-                      "title": "Inception",
-                      "watch_count": 42
-                  },
-                  {
-                      "id": 2,
-                      "director": "Steven Spielberg",
-                      "title": "Jurassic Park",
-                      "watch_count": 35
-                  }
-              ]
-          }
-          ```
-    - Error Response Example:
-        - code: 500
-        - content:
-          ```json
-          {
-              "error": "Error generating leaderboard"
-          }
-          ```
-
-- Example Request:
-  ```http
-  GET /api/movie-leaderboard
+- **Error Response Example**:
+  ```json
+  {
+      "error": "Invalid list numbers or movies not found"
+  }
   ```
 
-- Example Response:
+---
+
+## Leaderboard Route
+
+### **Route: `/api/movie-leaderboard`**
+
+- **Request Type**: `GET`
+- **Purpose**: Get a list of all movies sorted by watch count.
+
+#### Response Format
+
+- **Success Response Example**:
   ```json
   {
       "status": "success",
@@ -436,24 +337,10 @@ Error Response Example:
       ]
   }
   ```
-=======
 
-    "status": "success"
-
-}
-
-
-
-- **A description of each route (example on ed discussion):**
-  - **Route Name and Path**
-  - **Request Type**
-    - GET, POST, PUT, DELETE
-  - **Purpose**
-  - **Request Format**
-    - GET parameters
-    - POST / PUT / DELETE body
-  - **Response Format**
-    - JSON keys and value types
-  - **Example**
-    - Request in the form of JSON body or cURL command
-    - Associated JSON response
+- **Error Response Example**:
+  ```json
+  {
+      "error": "Error generating leaderboard"
+  }
+  ```
