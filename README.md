@@ -103,6 +103,31 @@ Success Response Example:
     "status": "success"
   
   }
+
+**Route: /api/add-movie-to-watchlist'**
+
+Request Type: POST
+
+Purpose: Adds a new movie to the watchlist by compound key
+
+Response Format: JSON
+
+Success Response Example:
+  {
+  
+    "status": "success, movie added to watchlist"
+    
+  }
+  
+Error Response Example:
+  {
+  
+  "error": "Error adding movie to watchlist"
+  
+  }
+
+
+
 - **A description of each route (example on ed discussion):**
   - **Route Name and Path**
   - **Request Type**
