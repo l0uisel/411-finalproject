@@ -1,5 +1,6 @@
 import logging
 import sqlite3
+import os
 from bcrypt import gensalt, hashpw, checkpw
 from movie_collection.utils.sql_utils import get_db_connection
 from movie_collection.utils.logger import configure_logger
@@ -7,19 +8,20 @@ from movie_collection.utils.logger import configure_logger
 
 logger = logging.getLogger(__name__)
 configure_logger(logger)
+ENCODING = os.getenv("ENCODING")
 
 
 def hash_password(password: str, salt: str) -> str:
     """
     Hashes a password using the provided salt.
     """
-    return hashpw(password.encode('utf-8'), salt.encode('utf-8')).decode('utf-8')
+    return hashpw(password.encode(ENCODING), salt.encode(ENCODING)).decode(ENCODING)
 
 def validate_password(stored_hashed_password: str, password: str) -> bool:
     """
     Validates the provided password against the stored hashed password.
     """
-    return checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8'))
+    return checkpw(password.encode(ENCODING), stored_hashed_password.encode(ENCODING))
 
 def create_user(username: str, password: str) -> None:
     """
@@ -33,7 +35,7 @@ def create_user(username: str, password: str) -> None:
         ValueError: If the username already exists or another error occurs.
     """
     logger.info("Attempting to create a new user: %s", username)
-    salt = gensalt().decode('utf-8')
+    salt = gensalt().decode(ENCODING)
     hashed_password = hash_password(password, salt)
 
     try:
@@ -101,7 +103,7 @@ def update_password(username: str, old_password:str, new_password: str) -> None:
         ValueError: If the user does not exist or another error occurs.
     """
     logger.info("Attempting to update password for user: %s", username)
-    new_salt = gensalt().decode('utf-8')
+    new_salt = gensalt().decode(ENCODING)
     new_hashed_password = hash_password(new_password, new_salt)
 
     if not validate_user(username, old_password):

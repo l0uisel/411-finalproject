@@ -1,6 +1,7 @@
 import pytest
 import sqlite3
 import re
+import os
 from contextlib import contextmanager
 from unittest.mock import patch, MagicMock, ANY
 from bcrypt import gensalt, hashpw
@@ -11,6 +12,8 @@ from movie_collection.models.user_model import (
     validate_user,
     update_password,
 )
+
+ENCODING = os.getenv("ENCODING")
 
 def normalize_whitespace(sql_query: str) -> str:
     return re.sub(r'\s+', ' ', sql_query).strip()
@@ -37,14 +40,14 @@ def mock_db_connection(mocker):
     return mock_conn  # Return the mock connection for test-specific configuration
 
 def test_hash_password():
-    salt = gensalt().decode('utf-8')
+    salt = gensalt().decode(ENCODING)
     password = "securepassword"
     hashed = hash_password(password, salt)
-    assert hashpw(password.encode('utf-8'), salt.encode('utf-8')).decode('utf-8') == hashed
+    assert hashpw(password.encode(ENCODING), salt.encode(ENCODING)).decode(ENCODING) == hashed
 
 def test_validate_password():
     password = "securepassword"
-    salt = gensalt().decode('utf-8')
+    salt = gensalt().decode(ENCODING)
     hashed = hash_password(password, salt)
     assert validate_password(hashed, password) is True
     assert validate_password(hashed, "wrongpassword") is False
@@ -86,14 +89,14 @@ def test_create_user_existing(mock_db_connection):
 
 def test_validate_user_success(mock_db_connection):
     mock_cursor = mock_db_connection.cursor.return_value
-    hashed_password = hash_password("securepassword", gensalt().decode('utf-8'))
+    hashed_password = hash_password("securepassword", gensalt().decode(ENCODING))
     mock_cursor.fetchone.return_value = (hashed_password,)
 
     assert validate_user("testuser", "securepassword") is True
 
 def test_validate_user_invalid(mock_db_connection):
     mock_cursor = mock_db_connection.cursor.return_value
-    hashed_password = hash_password("securepassword", gensalt().decode('utf-8'))
+    hashed_password = hash_password("securepassword", gensalt().decode(ENCODING))
     mock_cursor.fetchone.return_value = (hashed_password,)
 
     assert validate_user("testuser", "wrongpassword") is False
