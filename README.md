@@ -37,55 +37,55 @@
   
 **Route: /api/db-check**
 
-  Request Type: GET
+Request Type: GET
 
-  Purpose: Verify the database connection and ensure the required tables exist.
+Purpose: Verify the database connection and ensure the required tables exist.
 
-  Response Format: JSON
-
+Response Format: JSON
+  
   Success Response Example:
   {
-
-    "database_status": "healthy"
-    
-  }
-
-Error Response Example:
-{
-
-  "error": "movies table does not exist"
   
-}
+    "database_status": "healthy"
+  
+  }
+  
+  Error Response Example:
+  {
+  
+    "error": "movies table does not exist"
+  
+  }
 
 **Route: /api/create-movie**
 
-  Request Type: POST
+Request Type: POST
 
-  Purpose: Add a new movie to the catalog.
+Purpose: Add a new movie to the catalog.
 
-  Request Body:
+Request Body:
 
   {
     "title": "string"
   }
-
+  
   Response Format: JSON
-
+  
   Success Response Example:
-
+  
   {
-
+  
     "status": "success",
     "movie": "Inception"
     
   }
 
-  Error Response Example:
+Error Response Example:
 
   {
-
+  
     "error": "Invalid input, all fields are required with valid values"
-
+  
   }
 
 **Route: /api/clear-catalog**
@@ -98,11 +98,11 @@ Response Format: JSON
 
 Success Response Example:
 
-{
-
-  "status": "success"
+  {
   
-}
+    "status": "success"
+  
+  }
 - **A description of each route (example on ed discussion):**
   - **Route Name and Path**
   - **Request Type**
@@ -116,10 +116,3 @@ Success Response Example:
   - **Example**
     - Request in the form of JSON body or cURL command
     - Associated JSON response
-
-## Steps required to run the application:
-1. Create an API key for the omdbapi.com: https://www.omdbapi.com/
-2. Put it in the .env file like API_KEY=<your api key>
-3. Activate the virtual environment using setup_env.sh
-4. Run run_docker.sh
-5. Now the app is running on the port specified in the .env file. The default port is 800.
