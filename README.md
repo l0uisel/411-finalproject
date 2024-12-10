@@ -37,55 +37,55 @@
   
 **Route: /api/db-check**
 
-  Request Type: GET
+Request Type: GET
 
-  Purpose: Verify the database connection and ensure the required tables exist.
+Purpose: Verify the database connection and ensure the required tables exist.
 
-  Response Format: JSON
-
+Response Format: JSON
+  
   Success Response Example:
   {
-
-    "database_status": "healthy"
-    
-  }
-
-Error Response Example:
-{
-
-  "error": "movies table does not exist"
   
-}
+    "database_status": "healthy"
+  
+  }
+  
+  Error Response Example:
+  {
+  
+    "error": "movies table does not exist"
+  
+  }
 
 **Route: /api/create-movie**
 
-  Request Type: POST
+Request Type: POST
 
-  Purpose: Add a new movie to the catalog.
+Purpose: Add a new movie to the catalog.
 
-  Request Body:
+Request Body:
 
   {
     "title": "string"
   }
-
+  
   Response Format: JSON
-
+  
   Success Response Example:
-
+  
   {
-
+  
     "status": "success",
     "movie": "Inception"
     
   }
 
-  Error Response Example:
+Error Response Example:
 
   {
-
+  
     "error": "Invalid input, all fields are required with valid values"
-
+  
   }
 
 **Route: /api/clear-catalog**
@@ -105,20 +105,69 @@ Error Response Example:
   }
 
 
+#### Watchlist Management Routes
+
+**Route: /api/add-movie-to-watchlist**
+
+Request Type: POST
+
+Purpose: Adds a new movie to the watchlist by compound key
+
+Response Format: JSON
+
+Success Response Example:
+  {
+  
+    "status": "success, movie added to watchlist"
+    
+  }
+  
+Error Response Example:
+  {
+  
+    "error": "Error adding movie to watchlist"
+  
+  }
+
+**Route: /api/remove-movie-from-watchlist**
+
+Request Type: DELETE
+
+Purpose:  Removes a movie from the watchlist by compound key
+
+Response Format: JSON
+
+Success Response Example:
+  {
+  
+    "status": "success, movie removed from watchlist"
+    
+  }
+  
+Error Response Example:
+  {
+  
+    "error": "Error removing movie from watchlist"
+  
+  }
+
+
+
+#### Arrange Watchlist Routes
 **Route: /api/move-movie-to-beginning**
 
-  - Request Type: POST
+- Request Type: POST
 
-  - Purpose: move a movie to the beginning of the watchlist.
+- Purpose: move a movie to the beginning of the watchlist.
 
-  - Request Body:
+- Request Body:
     - director (String): The director of the movie.
     - title(String): The title of the movie.
     - year(Integer): The year the movie was released.
-  - Response Format: JSON
+- Response Format: JSON
     - Success Response Example:
-      - code: 200
-      - content:
+        - code: 200
+        - content:
 ```json   
       {
 
@@ -127,7 +176,7 @@ Error Response Example:
      
       }
 ```
-  - Error Response Example:
+- Error Response Example:
     - code: 500
     - content:
 ```json   
@@ -137,7 +186,7 @@ Error Response Example:
 
         }
 ```
-  - Example Request:
+- Example Request:
 ```json   
     {
         "director": "Christopher Nolan",
@@ -145,7 +194,7 @@ Error Response Example:
         "year": 2010
     }
 ```
-  - Example Response:
+- Example Response:
 ```json   
     {
         "status": "success",
@@ -155,238 +204,245 @@ Error Response Example:
 
 **Route: /api/move-movie-to-end**
 
-  - Request Type: POST
+- Request Type: POST
 
-  - Purpose: Move a movie to the end of the watchlist.
+- Purpose: Move a movie to the end of the watchlist.
 
-  - Request Body:
+- Request Body:
     - director (String): The director of the movie.
     - title (String): The title of the movie.
     - year (Integer): The year the movie was released.
 
-  - Response Format: JSON
+- Response Format: JSON
     - Success Response Example:
-      - code: 200
-      - content:
-        ```json
-        {
-            "status": "success",
-            "movie": "Inception"
-        }
-        ```
+        - code: 200
+        - content:
+          ```json
+          {
+              "status": "success",
+              "movie": "Inception"
+          }
+          ```
     - Error Response Example:
-      - code: 500
-      - content:
-        ```json
-        {
-            "error": "Invalid input, all fields are required with valid values"
-        }
-        ```
+        - code: 500
+        - content:
+          ```json
+          {
+              "error": "Invalid input, all fields are required with valid values"
+          }
+          ```
 
-  - Example Request:
-    ```json
-    {
-        "director": "Christopher Nolan",
-        "title": "Inception",
-        "year": 2010
-    }
-    ```
+- Example Request:
+  ```json
+  {
+      "director": "Christopher Nolan",
+      "title": "Inception",
+      "year": 2010
+  }
+  ```
 
-  - Example Response:
-    ```json
-    {
-        "status": "success",
-        "movie": "Inception"
-    }
-    ```
+- Example Response:
+  ```json
+  {
+      "status": "success",
+      "movie": "Inception"
+  }
+  ```
 
 ---
 
 **Route: /api/move-movie-to-list-number**
 
-  - Request Type: POST
+- Request Type: POST
 
-  - Purpose: Move a movie to a specific list number in the watchlist.
+- Purpose: Move a movie to a specific list number in the watchlist.
 
-  - Request Body:
+- Request Body:
     - director (String): The director of the movie.
     - title (String): The title of the movie.
     - year (Integer): The year the movie was released.
     - list_number (Integer): The new list number to move the movie to.
 
-  - Response Format: JSON
+- Response Format: JSON
     - Success Response Example:
-      - code: 200
-      - content:
-        ```json
-        {
-            "status": "success",
-            "movie": "Inception",
-            "list_number": 2
-        }
-        ```
+        - code: 200
+        - content:
+          ```json
+          {
+              "status": "success",
+              "movie": "Inception",
+              "list_number": 2
+          }
+          ```
     - Error Response Example:
-      - code: 500
-      - content:
-        ```json
-        {
-            "error": "Invalid input, all fields are required with valid values"
-        }
-        ```
+        - code: 500
+        - content:
+          ```json
+          {
+              "error": "Invalid input, all fields are required with valid values"
+          }
+          ```
 
-  - Example Request:
-    ```json
-    {
-        "director": "Christopher Nolan",
-        "title": "Inception",
-        "year": 2010,
-        "list_number": 2
-    }
-    ```
+- Example Request:
+  ```json
+  {
+      "director": "Christopher Nolan",
+      "title": "Inception",
+      "year": 2010,
+      "list_number": 2
+  }
+  ```
 
-  - Example Response:
-    ```json
-    {
-        "status": "success",
-        "movie": "Inception",
-        "list_number": 2
-    }
-    ```
+- Example Response:
+  ```json
+  {
+      "status": "success",
+      "movie": "Inception",
+      "list_number": 2
+  }
+  ```
 
 ---
 
 **Route: /api/swap-movies-in-watchlist**
 
-  - Request Type: POST
+- Request Type: POST
 
-  - Purpose: Swap two movies in the watchlist by their list numbers.
+- Purpose: Swap two movies in the watchlist by their list numbers.
 
-  - Request Body:
+- Request Body:
     - list_number_1 (Integer): The list number of the first movie.
     - list_number_2 (Integer): The list number of the second movie.
 
-  - Response Format: JSON
+- Response Format: JSON
     - Success Response Example:
-      - code: 200
-      - content:
-        ```json
-        {
-            "status": "success",
-            "swapped_movies": {
-                "list_1": {
-                    "id": 1,
-                    "director": "Christopher Nolan",
-                    "title": "Inception"
-                },
-                "list_2": {
-                    "id": 2,
-                    "director": "Quentin Tarantino",
-                    "title": "Pulp Fiction"
-                }
-            }
-        }
-        ```
+        - code: 200
+        - content:
+          ```json
+          {
+              "status": "success",
+              "swapped_movies": {
+                  "list_1": {
+                      "id": 1,
+                      "director": "Christopher Nolan",
+                      "title": "Inception"
+                  },
+                  "list_2": {
+                      "id": 2,
+                      "director": "Quentin Tarantino",
+                      "title": "Pulp Fiction"
+                  }
+              }
+          }
+          ```
     - Error Response Example:
-      - code: 500
-      - content:
-        ```json
-        {
-            "error": "Invalid list numbers or movies not found"
-        }
-        ```
+        - code: 500
+        - content:
+          ```json
+          {
+              "error": "Invalid list numbers or movies not found"
+          }
+          ```
 
-  - Example Request:
-    ```json
-    {
-        "list_number_1": 1,
-        "list_number_2": 2
-    }
-    ```
+- Example Request:
+  ```json
+  {
+      "list_number_1": 1,
+      "list_number_2": 2
+  }
+  ```
 
-  - Example Response:
-    ```json
-    {
-        "status": "success",
-        "swapped_movies": {
-            "list_1": {
-                "id": 1,
-                "director": "Christopher Nolan",
-                "title": "Inception"
-            },
-            "list_2": {
-                "id": 2,
-                "director": "Quentin Tarantino",
-                "title": "Pulp Fiction"
-            }
-        }
-    }
-    ```
+- Example Response:
+  ```json
+  {
+      "status": "success",
+      "swapped_movies": {
+          "list_1": {
+              "id": 1,
+              "director": "Christopher Nolan",
+              "title": "Inception"
+          },
+          "list_2": {
+              "id": 2,
+              "director": "Quentin Tarantino",
+              "title": "Pulp Fiction"
+          }
+      }
+  }
+  ```
 
 ---
 
 **Route: /api/movie-leaderboard**
 
-  - Request Type: GET
+- Request Type: GET
 
-  - Purpose: Get a list of all movies sorted by watch count.
+- Purpose: Get a list of all movies sorted by watch count.
 
-  - Response Format: JSON
+- Response Format: JSON
     - Success Response Example:
-      - code: 200
-      - content:
-        ```json
-        {
-            "status": "success",
-            "leaderboard": [
-                {
-                    "id": 1,
-                    "director": "Christopher Nolan",
-                    "title": "Inception",
-                    "watch_count": 42
-                },
-                {
-                    "id": 2,
-                    "director": "Steven Spielberg",
-                    "title": "Jurassic Park",
-                    "watch_count": 35
-                }
-            ]
-        }
-        ```
+        - code: 200
+        - content:
+          ```json
+          {
+              "status": "success",
+              "leaderboard": [
+                  {
+                      "id": 1,
+                      "director": "Christopher Nolan",
+                      "title": "Inception",
+                      "watch_count": 42
+                  },
+                  {
+                      "id": 2,
+                      "director": "Steven Spielberg",
+                      "title": "Jurassic Park",
+                      "watch_count": 35
+                  }
+              ]
+          }
+          ```
     - Error Response Example:
-      - code: 500
-      - content:
-        ```json
-        {
-            "error": "Error generating leaderboard"
-        }
-        ```
+        - code: 500
+        - content:
+          ```json
+          {
+              "error": "Error generating leaderboard"
+          }
+          ```
 
-  - Example Request:
-    ```http
-    GET /api/movie-leaderboard
-    ```
+- Example Request:
+  ```http
+  GET /api/movie-leaderboard
+  ```
 
-  - Example Response:
-    ```json
-    {
-        "status": "success",
-        "leaderboard": [
-            {
-                "id": 1,
-                "director": "Christopher Nolan",
-                "title": "Inception",
-                "watch_count": 42
-            },
-            {
-                "id": 2,
-                "director": "Steven Spielberg",
-                "title": "Jurassic Park",
-                "watch_count": 35
-            }
-        ]
-    }
-    ```
+- Example Response:
+  ```json
+  {
+      "status": "success",
+      "leaderboard": [
+          {
+              "id": 1,
+              "director": "Christopher Nolan",
+              "title": "Inception",
+              "watch_count": 42
+          },
+          {
+              "id": 2,
+              "director": "Steven Spielberg",
+              "title": "Jurassic Park",
+              "watch_count": 35
+          }
+      ]
+  }
+  ```
+=======
+
+    "status": "success"
+
+}
+
+
 
 - **A description of each route (example on ed discussion):**
   - **Route Name and Path**
@@ -401,10 +457,3 @@ Error Response Example:
   - **Example**
     - Request in the form of JSON body or cURL command
     - Associated JSON response
-
-## Steps required to run the application:
-1. Create an API key for the omdbapi.com: https://www.omdbapi.com/
-2. Put it in the .env file like API_KEY=<your api key>
-3. Activate the virtual environment using setup_env.sh
-4. Run run_docker.sh
-5. Now the app is running on the port specified in the .env file. The default port is 800.
